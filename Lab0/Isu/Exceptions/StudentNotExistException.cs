@@ -1,9 +1,13 @@
+using Isu.Entities;
 namespace Isu.Exceptions;
 
 public class StudentNotExistException : Exception
 {
-    public StudentNotExistException(string? message = "Student isn't exists")
-        : base(message)
+    private StudentNotExistException(string message)
+        : base(message) { }
+
+    public static StudentNotExistException StudentNotExist(int id)
     {
+        return new StudentNotExistException($"Student with id {id} isn't exists");
     }
 }

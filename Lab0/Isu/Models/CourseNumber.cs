@@ -8,7 +8,7 @@ public class CourseNumber
     {
         if (number is > 4 or < 1)
         {
-            throw new CourseNumberException($"Course {number} isn't exist");
+            throw CourseNumberException.InvalidCourseNumber(number);
         }
 
         Number = number;

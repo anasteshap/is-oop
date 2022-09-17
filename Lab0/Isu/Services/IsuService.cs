@@ -17,7 +17,7 @@ public class IsuService : IIsuService
 
         if (_groups.Contains(group))
         {
-            throw new GroupAlreadyExistsException($"Group {name.Name} is already exist");
+            throw GroupAlreadyExistsException.GroupAlreadyExists(name);
         }
 
         _groups.Add(group);
@@ -26,15 +26,10 @@ public class IsuService : IIsuService
 
     public Student AddStudent(Group group, string name)
     {
-        var student = new Student(name, _idGenerator.Id, group.GroupName);
+        var student = new Student(name, _idGenerator.NewId(), group.GroupName);
         if (_students.Contains(student))
         {
-            throw new StudentExistsInIsuException($"Student {student.Name} is already exist in Isu");
-        }
-
-        if (group.Students.Contains(student))
-        {
-            throw new StudentInGroupException($"Student {student.Name} is already in group");
+            throw StudentExistsInIsuException.StudentAlreadyExistsInIsu(student.Name);
         }
 
         group.AddStudent(student);
@@ -44,8 +39,9 @@ public class IsuService : IIsuService
 
     public Student GetStudent(int id)
     {
-        return FindStudent(id) ??
-               throw new StudentNotExistException($"Student doesn't exist, id {id} is invalid");
+        Student student = FindStudent(id) ??
+                throw StudentNotExistException.StudentNotExist(id);
+        return student;
     }
 
     public Student? FindStudent(int id)
@@ -55,7 +51,7 @@ public class IsuService : IIsuService
 
     public List<Student> FindStudents(GroupName groupName)
     {
-        return _groups.FirstOrDefault(x => x.GroupName == groupName)?.Students ?? new List<Student>();
+        return _groups.FirstOrDefault(x => x.GroupName == groupName)?.Students.ToList() ?? new List<Student>();
     }
 
     public List<Student> FindStudents(CourseNumber courseNumber)
@@ -70,29 +66,17 @@ public class IsuService : IIsuService
 
     public List<Group> FindGroups(CourseNumber courseNumber)
     {
-        return _groups.Where(x => x.CourseNumber == courseNumber).ToList();
+        return _groups.Where(x => x.GroupName.CourseNumber == courseNumber).ToList();
     }
 
     public void ChangeStudentGroup(Student student, Group newGroup)
     {
-        if (FindStudent(student.Id) == null)
-        {
-            throw new StudentNotExistException($"Student {student.Name} doesn't exist");
-        }
+        var oldGroup = FindGroup(student.GroupName) ??
+                       throw GroupNotExistException.GroupNotExist(student.GroupName);
 
-        var oldGroup = _groups.FirstOrDefault(x => x.GroupName == student.GroupName);
-        if (oldGroup == null)
-        {
-            throw new GroupNotExistException($"Group {student.GroupName} doesn't exist");
-        }
-
-        if (newGroup.Students.Contains(student))
-        {
-            throw new StudentInGroupException($"Student {student.Name} is already in group.");
-        }
-
+        GetStudent(student.Id); // проверка, есть ли студент в ису
         oldGroup.DeleteStudent(student);
-        student.GroupName = newGroup.GroupName;
+        student.ChangeGroup(newGroup);
         newGroup.AddStudent(student);
     }
 }

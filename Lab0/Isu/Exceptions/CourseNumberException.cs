@@ -1,7 +1,13 @@
+using Isu.Models;
 namespace Isu.Exceptions;
 
 public class CourseNumberException : Exception
 {
-    public CourseNumberException(string? message = "Course isn't exist")
+    private CourseNumberException(string message)
         : base(message) { }
+
+    public static CourseNumberException InvalidCourseNumber(int courseNumber)
+    {
+        return new CourseNumberException($"Course {courseNumber} isn't exist");
+    }
 }

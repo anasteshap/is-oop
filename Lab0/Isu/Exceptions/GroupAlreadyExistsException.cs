@@ -1,9 +1,13 @@
+using Isu.Models;
 namespace Isu.Exceptions;
 
 public class GroupAlreadyExistsException : Exception
 {
-    public GroupAlreadyExistsException(string? message = "Group is already exist")
-        : base(message)
+    private GroupAlreadyExistsException(string message)
+        : base(message) { }
+
+    public static GroupAlreadyExistsException GroupAlreadyExists(GroupName groupName)
     {
+        return new GroupAlreadyExistsException($"Group {groupName.Name} is already exist");
     }
 }

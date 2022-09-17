@@ -2,19 +2,11 @@ namespace Isu.Entities;
 
 public class IdGenerator
 {
-    private static int _id;
+    private int _id = 0;
 
-    public IdGenerator()
+    public int NewId()
     {
-        _id = 0;
-    }
-
-    public int Id
-    {
-        get
-        {
-            ++_id;
-            return _id;
-        }
+        _id++;
+        return _id;
     }
 }

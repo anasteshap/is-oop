@@ -1,9 +1,13 @@
+using Isu.Entities;
 namespace Isu.Exceptions;
 
 public class StudentNotInGroupException : Exception
 {
-    public StudentNotInGroupException(string? message = "Student with this id isn't in the group")
-        : base(message)
+    private StudentNotInGroupException(string message)
+        : base(message) { }
+
+    public static StudentNotInGroupException StudentNotInGroup(Student student)
     {
+        return new StudentNotInGroupException($"Student {student.Name} {student.Id} isn't in the group");
     }
 }

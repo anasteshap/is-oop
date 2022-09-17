@@ -13,5 +13,10 @@ public class Student
 
     public int Id { get; }
     public string Name { get; }
-    public GroupName GroupName { get; set; }
+    public GroupName GroupName { get; private set; }
+
+    public void ChangeGroup(Group group)
+    {
+        GroupName = group.GroupName;
+    }
 }

@@ -6,41 +6,38 @@ namespace Isu.Entities;
 public class Group
 {
     private const int MaxCountOfPeople = 23;
+    private readonly List<Student> _students;
 
     public Group(GroupName groupName)
     {
         GroupName = groupName;
-        Students = new List<Student>();
-        CourseNumber = groupName.CourseNumber;
+        _students = new List<Student>();
     }
 
     public GroupName GroupName { get; }
-    public List<Student> Students { get; }
-    public CourseNumber CourseNumber { get; }
+    public IReadOnlyList<Student> Students { get => _students.AsReadOnly(); }
 
     public void AddStudent(Student student)
     {
         if (Students.Count == MaxCountOfPeople)
         {
-            throw new FullGroupException($"Group {GroupName} is full");
+            throw FullGroupException.GroupIsFull(GroupName);
         }
 
-        if (StudentInGroup(student))
+        if (Students.Contains(student))
         {
-            throw new StudentInGroupException($"Student {student.Name} ({student.Id}) is already in group");
+            throw StudentInGroupException.StudentAlreadyInGroup(student);
         }
 
-        Students.Add(student);
+        _students.Add(student);
     }
 
     public void DeleteStudent(Student student)
     {
-        if (!StudentInGroup(student))
+        if (!_students.Remove(student))
         {
-            throw new StudentInGroupException($"Student {student.Name} ({student.Id}) isn't in the group");
+            throw StudentNotInGroupException.StudentNotInGroup(student);
         }
-
-        Students.Remove(student);
     }
 
     public bool StudentInGroup(Student student)

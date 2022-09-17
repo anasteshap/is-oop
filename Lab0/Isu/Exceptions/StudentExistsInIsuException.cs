@@ -1,9 +1,13 @@
+using Isu.Models;
 namespace Isu.Exceptions;
 
 public class StudentExistsInIsuException : Exception
 {
-    public StudentExistsInIsuException(string? message = "Student is already exist in Isu")
-        : base(message)
+    private StudentExistsInIsuException(string message)
+        : base(message) { }
+
+    public static StudentExistsInIsuException StudentAlreadyExistsInIsu(string studentName)
     {
+        return new StudentExistsInIsuException($"Student {studentName} is already exist in Isu");
     }
 }

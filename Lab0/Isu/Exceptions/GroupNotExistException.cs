@@ -1,9 +1,13 @@
+using Isu.Models;
 namespace Isu.Exceptions;
 
 public class GroupNotExistException : Exception
 {
-    public GroupNotExistException(string? message = "Group isn't exist")
-        : base(message)
+    private GroupNotExistException(string message)
+        : base(message) { }
+
+    public static GroupNotExistException GroupNotExist(GroupName groupName)
     {
+        return new GroupNotExistException($"Group {groupName.Name} isn't exist");
     }
 }
