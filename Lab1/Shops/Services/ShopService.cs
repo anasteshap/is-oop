@@ -1,5 +1,6 @@
 using Shops.Entities;
 using Shops.Exceptions;
+using Shops.Models;
 
 namespace Shops.Services;
 
@@ -9,7 +10,7 @@ public class ShopService : IShopService
     private readonly HashSet<Customer> _customers = new ();
     private readonly HashSet<Product> _products = new ();
 
-    public void CheckoutNewProductInShop(Product product)
+    public void CheckoutNewProduct(Product product)
     {
         if (_products.Contains(product))
         {
@@ -19,9 +20,9 @@ public class ShopService : IShopService
         _products.Add(product);
     }
 
-    public Shop AddShop(string name, string address)
+    public Shop AddShop(string name, ShopAddress shopAddress)
     {
-        var newShop = new Shop(name, address);
+        var newShop = new Shop(name, shopAddress);
 
         if (_shops.Contains(newShop))
         {
@@ -64,7 +65,7 @@ public class ShopService : IShopService
     {
         var shops = _shops
             .Where(x => (x.FindProduct(nameProduct)?.Amount ?? -1) >= amount)
-            .OrderBy(x => x.GetProduct(nameProduct).Amount)
+            .OrderBy(x => x.GetProduct(nameProduct).Price)
             .ToList();
         if (!shops.Any())
         {

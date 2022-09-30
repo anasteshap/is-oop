@@ -1,10 +1,11 @@
 using Shops.Entities;
+using Shops.Models;
 namespace Shops.Services;
 
 public interface IShopService
 {
-    void CheckoutNewProductInShop(Product product);
-    Shop AddShop(string name, string address);
+    void CheckoutNewProduct(Product product);
+    Shop AddShop(string name, ShopAddress shopAddress);
     void RemoveShop(Shop shop);
     Shop? FindShop(Guid id);
     Shop GetShop(Guid id);

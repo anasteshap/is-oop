@@ -7,7 +7,7 @@ public class ShopException : Exception
 
     public static ShopException InvalidName()
     {
-        return new ShopException("Name or address is invalid (null)");
+        return new ShopException("Name is invalid (null)");
     }
 
     public static ShopException InvalidPrice(decimal price)
@@ -18,5 +18,10 @@ public class ShopException : Exception
     public static ShopException InvalidAmount(int amount)
     {
         return new ShopException($"{amount} - invalid amount of product");
+    }
+
+    public static ShopException InvalidAddress()
+    {
+        return new ShopException("Address is invalid (null)");
     }
 }

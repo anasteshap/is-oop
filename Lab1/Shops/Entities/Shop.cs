@@ -1,26 +1,27 @@
 using Shops.Exceptions;
+using Shops.Models;
 
 namespace Shops.Entities;
 
-public class Shop
+public class Shop : IEquatable<Shop>
 {
     private readonly List<ShopProduct> _shopProducts = new ();
 
-    public Shop(string name, string address)
+    public Shop(string name, ShopAddress shopAddress)
     {
-        if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(address))
+        if (string.IsNullOrEmpty(name))
         {
             throw ShopException.InvalidName();
         }
 
         Id = Guid.NewGuid();
         Name = name;
-        Address = address;
+        ShopAddress = shopAddress;
     }
 
     public Guid Id { get; }
     public string Name { get; }
-    public string Address { get; }
+    public ShopAddress ShopAddress { get; }
 
     public IReadOnlyList<ShopProduct> ShopProducts() => _shopProducts.AsReadOnly();
 
@@ -90,7 +91,7 @@ public class Shop
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
-        return _shopProducts.Equals(other._shopProducts) && Name == other.Name && Address == other.Address;
+        return _shopProducts.Equals(other._shopProducts) && Id.Equals(other.Id) && Name == other.Name && ShopAddress.Equals(other.ShopAddress);
     }
 
     public override bool Equals(object? obj)
@@ -103,6 +104,6 @@ public class Shop
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(_shopProducts, Name, Address);
+        return HashCode.Combine(_shopProducts, Id, Name, ShopAddress);
     }
 }

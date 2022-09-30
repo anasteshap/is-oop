@@ -19,7 +19,7 @@ public class ShopServiceException : Exception
 
     public static ShopServiceException ShopAlreadyExist(Shop shop)
     {
-        return new ShopServiceException($"{shop.Name} ({shop.Address}) has already existed");
+        return new ShopServiceException($"{shop.Name} ({shop.ShopAddress}) has already existed");
     }
 
     public static ShopServiceException ShopDoesNotExist()
@@ -29,6 +29,6 @@ public class ShopServiceException : Exception
 
     public static ShopServiceException ShopDoesNotExist(Shop shop)
     {
-        return new ShopServiceException($"Shop {shop.Name} ({shop.Address}) doesn't exist");
+        return new ShopServiceException($"Shop {shop.Name} ({shop.ShopAddress}) doesn't exist");
     }
 }
