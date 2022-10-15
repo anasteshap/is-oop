@@ -1,3 +1,4 @@
+using Isu.Extra.Exceptions;
 using Isu.Extra.Models;
 
 namespace Isu.Extra.Entities;
@@ -11,7 +12,7 @@ public class Ognp : IEquatable<Ognp>
     {
         if (streams is null)
         {
-            throw new Exception();
+            throw OgnpException.InvalidName();
         }
 
         Name = ognpName;
@@ -25,12 +26,12 @@ public class Ognp : IEquatable<Ognp>
     {
         if (ognpStream is null)
         {
-            throw new Exception();
+            throw OgnpException.InvalidName();
         }
 
         if (ognp._streams.Contains(ognpStream))
         {
-            throw new Exception();
+            throw OgnpException.StreamAlreadyExist(ognpStream);
         }
 
         ognp._streams.Add(ognpStream);

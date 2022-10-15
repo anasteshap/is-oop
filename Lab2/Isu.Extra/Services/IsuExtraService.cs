@@ -1,5 +1,6 @@
 using Isu.Entities;
 using Isu.Extra.Entities;
+using Isu.Extra.Exceptions;
 using Isu.Extra.Models;
 using Isu.Models;
 using Isu.Services;
@@ -26,7 +27,7 @@ public class IsuExtraService : IIsuExtraService
         var groupMegaFaculty = _megaFaculties.FirstOrDefault(x => x.Faculties().Contains(name.Faculty));
         if (groupMegaFaculty is null)
         {
-            throw new Exception();
+            throw MegaFacultyException.InvalidName();
         }
 
         var group = _isuService.AddGroup(name);
@@ -88,13 +89,13 @@ public class IsuExtraService : IIsuExtraService
     {
         if (_ognps.Contains(ognp))
         {
-            throw new Exception();
+            throw OgnpException.OgnpAlreadyExist();
         }
 
         var megaFaculty = _megaFaculties.FirstOrDefault(x => Equals(x.Name, ognp.Name.MegaFaculty));
         if (megaFaculty is null)
         {
-            throw new Exception();
+            throw MegaFacultyException.InvalidName();
         }
 
         _ognps.Add(ognp);
@@ -104,12 +105,12 @@ public class IsuExtraService : IIsuExtraService
     {
         if (!_ognps.Contains(ognp) || !_extraStudents.Keys.ToList().Contains(student) || numOgnpStream < 1)
         {
-            throw new Exception();
+            throw OgnpException.InvalidName();
         }
 
         if (Equals(ognp.Name.MegaFaculty, GetStudentMegaFacultyName(student)))
         {
-            throw new Exception();
+            throw MegaFacultyException.InvalidName();
         }
 
         var extraStudent = _extraStudents[student];
@@ -122,7 +123,7 @@ public class IsuExtraService : IIsuExtraService
     {
         if (!_ognps.Contains(ognp) || !_extraStudents.Keys.ToList().Contains(student))
         {
-            throw new Exception();
+            throw OgnpException.InvalidName();
         }
 
         var extraStudent = _extraStudents[student];
@@ -163,7 +164,7 @@ public class IsuExtraService : IIsuExtraService
     {
         if (!_ognps.Contains(ognp))
         {
-            throw new Exception();
+            throw OgnpException.InvalidName();
         }
 
         var stream = new OgnpStream(number, lessons);
@@ -203,7 +204,7 @@ public class IsuExtraService : IIsuExtraService
     {
         if (!_extraStudents.Keys.ToList().Contains(student))
         {
-            throw new Exception();
+            throw ExtraStudentException.InvalidStudent();
         }
 
         var studentFaculty = student.GroupName.Faculty;

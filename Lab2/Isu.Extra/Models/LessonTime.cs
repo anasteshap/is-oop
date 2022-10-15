@@ -1,3 +1,5 @@
+using Isu.Extra.Exceptions;
+
 namespace Isu.Extra.Models;
 
 public class LessonTime : IEquatable<LessonTime>
@@ -6,7 +8,7 @@ public class LessonTime : IEquatable<LessonTime>
     {
         if (startTime is null)
         {
-            throw new Exception();
+            throw LessonException.InvalidLessonTime();
         }
 
         DayOfWeek = dayOfWeek;

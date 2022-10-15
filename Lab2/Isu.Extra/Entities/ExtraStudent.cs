@@ -1,4 +1,5 @@
 using Isu.Entities;
+using Isu.Extra.Exceptions;
 using Isu.Extra.Models;
 using Isu.Models;
 
@@ -24,14 +25,14 @@ public class ExtraStudent
     {
         if (!IsPossibleToAddOgnp(extraStudent))
         {
-            throw new Exception();
+            throw ExtraGroupException.GroupIsFull();
         }
 
         if (extraStudent._ognps.Count == 1)
         {
             if (extraStudent._ognps[0].Name.MegaFaculty != ognp.Name.MegaFaculty)
             {
-                throw new Exception();
+                throw MegaFacultyException.InvalidName();
             }
         }
 
@@ -42,7 +43,7 @@ public class ExtraStudent
     {
         if (!extraStudent._ognps.Remove(ognp))
         {
-            throw new Exception();
+            throw ExtraStudentException.InvalidStudent();
         }
     }
 

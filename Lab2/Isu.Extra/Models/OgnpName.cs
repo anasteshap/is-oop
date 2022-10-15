@@ -1,3 +1,5 @@
+using Isu.Extra.Exceptions;
+
 namespace Isu.Extra.Models;
 
 public class OgnpName
@@ -6,7 +8,7 @@ public class OgnpName
     {
         if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(megaFaculty))
         {
-            throw new Exception();
+            throw OgnpException.InvalidName();
         }
 
         Name = name;

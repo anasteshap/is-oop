@@ -1,3 +1,4 @@
+using Isu.Extra.Exceptions;
 using Isu.Extra.Models;
 using Isu.Extra.Tools;
 
@@ -26,12 +27,12 @@ public class OgnpStream
     {
         if (lesson is null)
         {
-            throw new Exception();
+            throw LessonException.InvalidName();
         }
 
         if (_lessons.ContainsKey(lesson))
         {
-            throw new Exception();
+            throw OgnpException.LessonAlreadyExist(this, lesson);
         }
 
         _lessons[lesson] = new OgnpGroup(new OgnpGroupName(lesson.Name));
@@ -44,12 +45,12 @@ public class OgnpStream
     {
         if (extraStudent is null)
         {
-            throw new Exception();
+            throw ExtraStudentException.InvalidStudent();
         }
 
         if (_extraStudents.Contains(extraStudent))
         {
-            throw new Exception();
+            throw ExtraStudentException.StudentAlreadyExist();
         }
 
         var studentSchedule = extraStudent.ExtraGroup.Schedule + extraStudent.OgnpSchedule();
@@ -68,12 +69,12 @@ public class OgnpStream
     {
         if (extraStudent is null)
         {
-            throw new Exception();
+            throw ExtraStudentException.InvalidStudent();
         }
 
         if (!_extraStudents.Remove(extraStudent))
         {
-            throw new Exception();
+            throw ExtraStudentException.InvalidStudent();
         }
 
         _lessons.Values.First(x => x.Students().Contains(extraStudent)).RemoveStudent(extraStudent);

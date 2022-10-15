@@ -1,3 +1,5 @@
+using Isu.Extra.Exceptions;
+
 namespace Isu.Extra.Models;
 
 public class MegaFaculty
@@ -8,12 +10,12 @@ public class MegaFaculty
     {
         if (string.IsNullOrEmpty(name))
         {
-            throw new Exception();
+            throw MegaFacultyException.InvalidName();
         }
 
         if (faculties.Count < 1)
         {
-            throw new Exception();
+            throw MegaFacultyException.InvalidName();
         }
 
         Name = name;

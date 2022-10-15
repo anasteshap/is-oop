@@ -1,3 +1,5 @@
+using Isu.Extra.Exceptions;
+
 namespace Isu.Extra.Entities;
 
 public class Teacher
@@ -6,7 +8,7 @@ public class Teacher
     {
         if (name is null)
         {
-            throw new Exception();
+            throw TeacherException.InvalidName();
         }
 
         Name = name;

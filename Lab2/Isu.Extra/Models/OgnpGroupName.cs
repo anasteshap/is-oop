@@ -1,3 +1,5 @@
+using Isu.Extra.Exceptions;
+
 namespace Isu.Extra.Models;
 
 public class OgnpGroupName
@@ -6,7 +8,7 @@ public class OgnpGroupName
     {
         if (name is null)
         {
-            throw new Exception();
+            throw OgnpException.InvalidGroupName();
         }
 
         Name = name;

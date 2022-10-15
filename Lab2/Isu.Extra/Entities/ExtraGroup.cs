@@ -1,4 +1,5 @@
 using Isu.Entities;
+using Isu.Extra.Exceptions;
 using Isu.Models;
 
 namespace Isu.Extra.Entities;
@@ -23,7 +24,7 @@ public class ExtraGroup
     {
         if (newSchedule is null)
         {
-            throw new Exception();
+            throw ExtraGroupException.InvalidSchedule();
         }
 
         Schedule = newSchedule;

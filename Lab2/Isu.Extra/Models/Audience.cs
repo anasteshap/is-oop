@@ -1,3 +1,5 @@
+using Isu.Extra.Exceptions;
+
 namespace Isu.Extra.Models;
 
 public class Audience
@@ -6,7 +8,7 @@ public class Audience
     {
         if (room < 1)
         {
-            throw new Exception();
+            throw LessonException.InvalidAudience();
         }
 
         Room = room;

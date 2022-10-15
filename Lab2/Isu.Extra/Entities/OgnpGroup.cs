@@ -1,3 +1,4 @@
+using Isu.Extra.Exceptions;
 using Isu.Extra.Models;
 namespace Isu.Extra.Entities;
 
@@ -19,12 +20,12 @@ public class OgnpGroup
     {
         if (_students.Count == MaxCountOfPeople)
         {
-            throw new Exception();
+            throw ExtraGroupException.GroupIsFull();
         }
 
         if (_students.Contains(student))
         {
-            throw new Exception();
+            throw ExtraStudentException.StudentAlreadyExist();
         }
 
         _students.Add(student);
@@ -34,7 +35,7 @@ public class OgnpGroup
     {
         if (!_students.Remove(student))
         {
-            throw new Exception();
+            throw ExtraStudentException.InvalidStudent();
         }
     }
 

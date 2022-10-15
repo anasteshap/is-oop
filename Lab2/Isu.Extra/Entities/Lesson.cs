@@ -1,3 +1,4 @@
+using Isu.Extra.Exceptions;
 using Isu.Extra.Models;
 
 namespace Isu.Extra.Entities;
@@ -10,7 +11,7 @@ public class Lesson
     {
         if (string.IsNullOrEmpty(name))
         {
-            throw new Exception();
+            throw LessonException.InvalidName();
         }
 
         Name = name;
