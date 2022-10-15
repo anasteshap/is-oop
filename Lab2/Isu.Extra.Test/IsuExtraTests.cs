@@ -1,5 +1,6 @@
 using Isu.Entities;
 using Isu.Extra.Entities;
+using Isu.Extra.Exceptions;
 using Isu.Extra.Models;
 using Isu.Extra.Services;
 using Isu.Models;
@@ -63,8 +64,8 @@ public class IsuExtraTests
         var student = isuExtraService.AddStudent(group, "Anastasiia");
         var newStudent = isuExtraService.AddStudent(group, "Dasha");
 
-        Assert.Throws<Exception>(() => isuExtraService.AddStudentOnOgnpStream(student, ognp11, 1));
-        Assert.Throws<Exception>(() => isuExtraService.AddStudentOnOgnpStream(student, ognp21, 2));
+        Assert.Throws<MegaFacultyException>(() => isuExtraService.AddStudentOnOgnpStream(student, ognp11, 1));
+        Assert.Throws<LessonException>(() => isuExtraService.AddStudentOnOgnpStream(student, ognp21, 2));
         var studentOgnpGroupName = isuExtraService.AddStudentOnOgnpStream(student, ognp22, 3);
 
         Assert.DoesNotContain(lesson1, isuExtraService.GetScheduleByStudent(student).LessonsOfEvenWeek);

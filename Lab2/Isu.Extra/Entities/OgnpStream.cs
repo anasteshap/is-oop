@@ -58,7 +58,7 @@ public class OgnpStream
             .Where(lesson => !CheckSchedule.IsLessonCrossing(studentSchedule, lesson))
             .ToList();
         var resultLesson = possibleLessons
-            .FirstOrDefault(lesson => Lesson.IsPossibleToAddStudent(_lessons[lesson])) ?? throw new Exception();
+            .FirstOrDefault(lesson => Lesson.IsPossibleToAddStudent(_lessons[lesson])) ?? throw LessonException.InvalidName();
 
         _extraStudents.Add(extraStudent);
         _lessons[resultLesson].AddStudent(extraStudent);
