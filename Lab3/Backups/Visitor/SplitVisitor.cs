@@ -61,12 +61,18 @@ public class SplitVisitor : IVisitor
         var archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update);
         _archives.Push(archive);
 
-        /*foreach (var comp in folderComponent.Components)
+        foreach (var comp in folderComponent.Components)
         {
-            this.CreateZipFile(comp);
-        }*/
+            if (comp.Repository.DirectoryExists(comp.FullName))
+            {
+                CreateZipFile(new FolderComponent(comp.Repository, comp.FullName));
+            }
+            else
+            {
+                CreateZipFile(new FileComponent(comp.Repository, comp.FullName));
+            }
+        }
 
-        folderComponent.Accept(this);
         _archives.Pop();
     }
 }

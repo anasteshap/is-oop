@@ -39,10 +39,7 @@ public class FolderComponent : IComponent
 
     public void Accept(IVisitor visitor)
     {
-        foreach (var component in _components)
-        {
-            component.Accept(visitor);
-        }
+        visitor.CreateZipFile(this);
     }
 
     /*public void AddComponent(IComponent component)
