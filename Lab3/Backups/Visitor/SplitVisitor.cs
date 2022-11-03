@@ -54,11 +54,11 @@ public class SplitVisitor : IVisitor
         }
         else
         {
-            var entry = _archives.Peek().CreateEntry(Path.GetFileName(folderFullName), CompressionLevel.Optimal);
+            var entry = _archives.Peek().CreateEntry($"{Path.GetFileName(folderFullName)}.zip", CompressionLevel.Optimal);
             zipToOpen = entry.Open();
         }
 
-        var archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update);
+        using var archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update);
         _archives.Push(archive);
 
         foreach (var comp in folderComponent.Components)
