@@ -1,13 +1,12 @@
-using Backups.Entities;
 using Backups.Repository;
 using Backups.Visitor;
 
 namespace Backups.Component;
 
-public class FolderComponent : IComponent
+public class FolderComponent : IFolderComponent
 {
-    private readonly List<IComponent> _components = new ();
-    public FolderComponent(IRepository repository, string path)
+    private readonly Func<string, IReadOnlyCollection<IComponent>> _componentsCreator;
+    public FolderComponent(IRepository repository, string path, Func<string, IReadOnlyCollection<IComponent>> componentsCreator)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -16,35 +15,21 @@ public class FolderComponent : IComponent
 
         Repository = repository;
         FullName = path;
-
-        var listObj = Repository.GetRelativePathsOfFolderSubFiles(FullName).ToList();
-        foreach (var obj in listObj)
-        {
-            if (Repository.DirectoryExists(obj))
-            {
-                _components.Add(new FolderComponent(Repository, obj));
-            }
-
-            if (Repository.FileExists(obj))
-            {
-                _components.Add(new FileComponent(Repository, obj));
-            }
-        }
+        _componentsCreator = componentsCreator;
     }
 
     public IRepository Repository { get; }
     public string FullName { get; }
 
-    public IReadOnlyCollection<IComponent> Components => _components;
+    public IReadOnlyCollection<IComponent> Components => _componentsCreator(FullName);
 
     public void Accept(IVisitor visitor)
     {
         visitor.CreateZipFile(this);
     }
 
-    /*public void AddComponent(IComponent component)
+    public Stream OpenStream()
     {
-        ArgumentNullException.ThrowIfNull(component);
-        _components.Add(component);
-    }*/
+        throw new NotImplementedException();
+    }
 }

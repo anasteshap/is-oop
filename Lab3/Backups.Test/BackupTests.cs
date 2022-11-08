@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using Backups.Algorithms;
+using Backups.Archivers;
 using Backups.Component;
 using Backups.Entities;
 using Backups.Repository;
@@ -14,14 +15,17 @@ public class BackupTests
         var systemPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         var rep = new FileSystemRepository(systemPath + "/rep");
 
-        var backupTask1 = new BackupTask("Task1", rep, new SplitStorageAlgorithm());
+        var backupTask1 = new BackupTask("Task1", rep, new SplitStorageAlgorithm(), new Archiver());
         var backupObject1 = new BackupObject(rep, "copy.xlsx");
         var backupObject2 = new BackupObject(rep, "temp");
         backupTask1.AddBackupObject(backupObject1);
         backupTask1.AddBackupObject(backupObject2);
-
         backupTask1.Working();
 
+        var backupTask2 = new BackupTask("Task2", rep, new SingleStorageAlgorithm(), new Archiver());
+        backupTask2.AddBackupObject(backupObject1);
+        backupTask2.AddBackupObject(backupObject2);
+        backupTask2.Working();
         /*var list = rep.GetRelativePathsOfFolderSubFiles(systemPath + "/rep/").ToList();
         Assert.Contains("copy.xlsx", list);
 

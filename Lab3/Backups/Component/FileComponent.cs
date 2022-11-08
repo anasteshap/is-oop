@@ -4,9 +4,10 @@ using Backups.Visitor;
 
 namespace Backups.Component;
 
-public class FileComponent : IComponent
+public class FileComponent : IFileComponent
 {
-    public FileComponent(IRepository repository, string path)
+    private readonly Func<string, Stream> _streamCreator;
+    public FileComponent(IRepository repository, string path, Func<string, Stream> streamCreator)
     {
         if (string.IsNullOrEmpty(path))
         {
@@ -15,6 +16,7 @@ public class FileComponent : IComponent
 
         Repository = repository;
         FullName = path;
+        _streamCreator = streamCreator;
     }
 
     public IRepository Repository { get; }
@@ -24,4 +26,6 @@ public class FileComponent : IComponent
     {
         visitor.CreateZipFile(this);
     }
+
+    public Stream OpenStream() => _streamCreator(FullName);
 }

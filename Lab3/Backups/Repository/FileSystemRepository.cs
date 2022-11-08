@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Backups.Component;
 using Backups.Inter;
 
@@ -5,7 +6,9 @@ namespace Backups.Repository;
 
 public class FileSystemRepository : IRepository
 {
-    private readonly List<IComponent> _components = new ();
+    private readonly Func<string, Stream> _streamCreator;
+    private readonly Func<string, IReadOnlyCollection<IComponent>> _componentsCreator;
+
     public FileSystemRepository(string pathName)
     {
         if (string.IsNullOrEmpty(pathName))
@@ -14,22 +17,14 @@ public class FileSystemRepository : IRepository
         }
 
         FullName = pathName;
-        foreach (string obj in GetRelativePathsOfFolderSubFiles(FullName).ToList())
-        {
-            if (DirectoryExists(obj))
-            {
-                _components.Add(new FolderComponent(this, obj));
-            }
-            else
-            {
-                _components.Add(new FileComponent(this, obj));
-            }
-        }
+        _streamCreator = OpenStream;
+        _componentsCreator = GetComponents;
     }
 
     public string FullName { get; }
 
-    public Stream OpenStream(string path) => new FileStream(Path.GetFullPath(path, FullName), FileMode.OpenOrCreate, FileAccess.ReadWrite);
+    public Stream OpenStream(string path) =>
+        new FileStream(Path.GetFullPath(path, FullName), FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
     public void SaveTo(string path, Stream stream)
     {
@@ -38,9 +33,32 @@ public class FileSystemRepository : IRepository
         stream.CopyTo(newStream);
     }
 
-    public IReadOnlyCollection<IComponent> Components() => _components;
-
     public IRepository GetSubRepository(string partialPath) => new FileSystemRepository($"{FullName}/{partialPath}");
+
+    public IComponent GetRepositoryComponent(string partialPath)
+    {
+        if (DirectoryExists(partialPath))
+        {
+            return new FolderComponent(this, partialPath, _componentsCreator);
+        }
+
+        return new FileComponent(this, partialPath, _streamCreator);
+    }
+
+    public IReadOnlyCollection<IComponent> GetComponents(string path)
+    {
+        var relativePaths = GetRelativePathsOfFolderSubFiles(path).ToList();
+        var directories = relativePaths
+            .Where(DirectoryExists)
+            .Select(x => new FolderComponent(this, x, _componentsCreator))
+            .ToList();
+        var files = relativePaths
+            .Where(FileExists)
+            .Select(x => new FileComponent(this, x, _streamCreator))
+            .ToList();
+
+        return new List<IComponent>().Concat(directories).Concat(files).ToList();
+    }
 
     public IReadOnlyCollection<string> GetRelativePathsOfFolderSubFiles(string path)
     {
@@ -49,9 +67,11 @@ public class FileSystemRepository : IRepository
             throw new Exception();
         }
 
-        var list = Directory.GetFileSystemEntries(Path.GetFullPath(path, $"{FullName}/")).ToList();
+        var files = Directory.GetFiles(Path.GetFullPath(path, $"{FullName}")).ToList();
+        var directories = Directory.GetDirectories(Path.GetFullPath(path, $"{FullName}")).ToList();
+        var infos = files.Concat(directories).ToList();
         var newList = new List<string>();
-        foreach (string a in list)
+        foreach (string a in infos)
         {
             newList.Add(Path.GetRelativePath(FullName, a));
         }

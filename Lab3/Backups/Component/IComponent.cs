@@ -9,4 +9,5 @@ public interface IComponent
     IRepository Repository { get; }
     string FullName { get; }
     void Accept(IVisitor visitor);
+    Stream OpenStream();
 }

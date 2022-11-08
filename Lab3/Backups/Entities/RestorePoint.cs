@@ -6,11 +6,11 @@ namespace Backups.Entities;
 public class RestorePoint
 {
     private readonly List<IBackupObject> _backupObjects;
-    public RestorePoint(string path, IRepository repository, DateTime dateTime, List<IBackupObject> backupObjects)
+    public RestorePoint(string path, IRepository repository, List<IBackupObject> backupObjects)
     {
         FullName = Path.GetFullPath(path);
         Repository = repository;
-        CreationDate = dateTime;
+        CreationDate = DateTime.Now;
         _backupObjects = backupObjects;
     }
 

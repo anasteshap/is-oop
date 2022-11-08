@@ -1,32 +1,24 @@
+using Backups.Archivers;
 using Backups.Component;
 using Backups.Entities;
 using Backups.Inter;
 using Backups.Repository;
-using Backups.Visitor;
 
 namespace Backups.Algorithms;
 
 public class SplitStorageAlgorithm : IAlgorithm
 {
-    public List<Storage> Save(IRepository repository, List<IBackupObject> backupObjects, string pathOfRestorePoint)
+    public List<Storage> Save(IRepository repository, IArchiver archiver, List<IBackupObject> backupObjects, string pathOfRestorePoint)
     {
+        backupObjects
+            .ForEach(x => archiver.Archive(
+                    new List<IComponent>() { repository.GetRepositoryComponent(x.FullName) }, // тут передается один компонент всегда
+                    repository,
+                    CreatePathForZip(pathOfRestorePoint, x.FullName + "_")));
+
         var storages = new List<Storage>();
-        var visitor = new SplitVisitor(pathOfRestorePoint);
-
-        foreach (IBackupObject obj in backupObjects)
-        {
-            if (obj.Repository.DirectoryExists(obj.FullName))
-            {
-                var folder = new FolderComponent(repository, obj.FullName);
-                folder.Accept(visitor);
-            }
-            else if (obj.Repository.FileExists(obj.FullName))
-            {
-                var file = new FileComponent(repository, obj.FullName);
-                file.Accept(visitor);
-            }
-        }
-
         return storages;
     }
+
+    private string CreatePathForZip(string folderPath, string zipName) => Path.Combine(folderPath, $"{zipName}.zip");
 }

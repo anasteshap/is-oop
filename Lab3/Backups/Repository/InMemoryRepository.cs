@@ -41,11 +41,6 @@ public class InMemoryRepository : IRepository, IDisposable
         throw new NotImplementedException();
     }
 
-    public IReadOnlyCollection<IComponent> Components()
-    {
-        throw new NotImplementedException();
-    }
-
     public IRepository GetSubRepository(string partialPath)
     {
         throw new NotImplementedException();
@@ -54,6 +49,11 @@ public class InMemoryRepository : IRepository, IDisposable
         a.
         var newFs = new InMemoryRepository();
         newFs.FullName = FullName*/
+    }
+
+    public IComponent GetRepositoryComponent(string partialPath)
+    {
+        throw new NotImplementedException();
     }
 
     public IReadOnlyCollection<string> GetRelativePathsOfFolderSubFiles(string path)

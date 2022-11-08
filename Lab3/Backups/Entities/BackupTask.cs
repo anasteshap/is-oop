@@ -1,6 +1,7 @@
 using System;
 using System.IO.Compression;
 using Backups.Algorithms;
+using Backups.Archivers;
 using Backups.Inter;
 using Backups.Repository;
 using Zio;
@@ -13,7 +14,7 @@ public class BackupTask : IBackupTask
     private readonly List<IBackupObject> _backupObjects = new ();
     private int _idRestorePoints = 1;
 
-    public BackupTask(string name, IRepository repository, IAlgorithm algorithm)
+    public BackupTask(string name, IRepository repository, IAlgorithm algorithm, IArchiver archiver)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -23,16 +24,16 @@ public class BackupTask : IBackupTask
         Name = name;
         Repository = repository;
         Algorithm = algorithm;
+        Archiver = archiver;
         Backup = new Backup();
         Repository.CreateDirectory($"{repository.FullName}/{name}");
-
-        // repository.AddBackupTask(this);
     }
 
     public string Name { get; }
     public IRepository Repository { get; }
     public IAlgorithm Algorithm { get; }
     public IBackup Backup { get; }
+    public IArchiver Archiver { get; }
     public IReadOnlyCollection<IBackupObject> BackupObjects() => _backupObjects;
 
     public void AddBackupObject(IBackupObject backupObject)
@@ -56,13 +57,12 @@ public class BackupTask : IBackupTask
     public RestorePoint Working()
     {
         string restorePointPath = $"{Name}/{_idRestorePoints}/";
-
         Repository.CreateDirectory(restorePointPath);
 
         List<Storage> storages =
-            Algorithm.Save(Repository, _backupObjects, $"{Repository.FullName}/{Name}/{_idRestorePoints}");
+            Algorithm.Save(Repository, Archiver, _backupObjects, $"{Repository.FullName}/{Name}/{_idRestorePoints}");
 
-        var restorePoint = new RestorePoint(restorePointPath, Repository, DateTime.Now, _backupObjects);
+        var restorePoint = new RestorePoint(restorePointPath, Repository, _backupObjects);
         Backup.AddRestorePoint(restorePoint);
         _idRestorePoints++;
         return restorePoint;

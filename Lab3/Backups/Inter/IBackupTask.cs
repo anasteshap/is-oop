@@ -1,4 +1,5 @@
 using Backups.Algorithms;
+using Backups.Archivers;
 using Backups.Entities;
 using Backups.Repository;
 
@@ -10,6 +11,7 @@ public interface IBackupTask
     IRepository Repository { get; }
     IAlgorithm Algorithm { get; }
     IBackup Backup { get; }
+    IArchiver Archiver { get; }
     IReadOnlyCollection<IBackupObject> BackupObjects();
     void AddBackupObject(IBackupObject backupObject);
     void RemoveBackupObject(IBackupObject backupObject);
