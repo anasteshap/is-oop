@@ -26,19 +26,5 @@ public class BackupTests
         backupTask2.AddBackupObject(backupObject1);
         backupTask2.AddBackupObject(backupObject2);
         backupTask2.Working();
-        /*var list = rep.GetRelativePathsOfFolderSubFiles(systemPath + "/rep/").ToList();
-        Assert.Contains("copy.xlsx", list);
-
-        var pathOfRestorePoint = $"{rep.FullName}/Task1/1";
-        var fileComponent = new FileComponent(rep, "temp");
-        string fileFullName = $"{fileComponent.Repository.FullName}/{fileComponent.FullName}";
-        string zipPath = $"{pathOfRestorePoint}/{Path.GetFileName(fileFullName)}.zip";
-
-        using (Stream zipToOpen = fileComponent.Repository.OpenStream(zipPath))
-        {
-            using (var archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
-            {
-            }
-        }*/
     }
 }
