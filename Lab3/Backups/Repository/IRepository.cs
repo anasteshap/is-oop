@@ -9,6 +9,7 @@ public interface IRepository
     void SaveTo(string path, Stream stream);
     IRepository GetSubRepository(string partialPath);
     IComponent GetRepositoryComponent(string partialPath);
+    IReadOnlyCollection<IComponent> GetComponents(string path);
     IReadOnlyCollection<string> GetRelativePathsOfFolderSubFiles(string path);
     void CreateDirectory(string path);
     bool Exists(string path);

@@ -78,14 +78,7 @@ public class FileSystemRepository : IRepository
         return newList;
     }
 
-    public void CreateDirectory(string path)
-    {
-        var folder = Path.GetDirectoryName(Path.GetFullPath(path, FullPath));
-        if (!string.IsNullOrEmpty(folder) && !DirectoryExists(folder))
-        {
-            Directory.CreateDirectory(folder);
-        }
-    }
+    public void CreateDirectory(string path) => Directory.CreateDirectory(Path.GetFullPath(path, FullPath));
 
     public bool Exists(string path)
     {

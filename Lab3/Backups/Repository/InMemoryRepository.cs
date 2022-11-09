@@ -6,6 +6,8 @@ namespace Backups.Repository;
 
 public class InMemoryRepository : IRepository, IDisposable
 {
+    private readonly Func<string, Stream> _streamCreator;
+    private readonly Func<string, IReadOnlyCollection<IComponent>> _componentsCreator;
     private readonly MemoryFileSystem _fs;
     private bool _disposed;
 
@@ -17,8 +19,9 @@ public class InMemoryRepository : IRepository, IDisposable
         }
 
         _fs = new MemoryFileSystem();
-        _fs.Name = fullPath;
-        FullPath = fullPath;
+        FullPath = string.Empty;
+        _streamCreator = OpenStream;
+        _componentsCreator = GetComponents;
     }
 
     ~InMemoryRepository() => Dispose(false);
@@ -27,12 +30,13 @@ public class InMemoryRepository : IRepository, IDisposable
 
     public Stream OpenStream(string path)
     {
-        string fullPath = Path.GetFullPath(path);
-        _fs.CreateDirectory(path);
-        using Stream stream = _fs.CreateFile($"{path}/1.txt");
-        return stream;
+        path = Path.GetFullPath(path);
+        if (_fs.FileExists(path))
+        {
+            _fs.OpenFile(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+        }
 
-        // return new Stream(path, true);
+        return _fs.CreateFile(path);
     }
 
     public void SaveTo(string path, Stream stream)
@@ -52,24 +56,43 @@ public class InMemoryRepository : IRepository, IDisposable
 
     public IComponent GetRepositoryComponent(string partialPath)
     {
-        throw new NotImplementedException();
+        if (DirectoryExists(partialPath))
+        {
+            return new FolderComponent(Path.GetFileName(partialPath), () => _componentsCreator(partialPath));
+        }
+
+        return new FileComponent(Path.GetFileName(partialPath), () => _streamCreator(partialPath));
+    }
+
+    public IReadOnlyCollection<IComponent> GetComponents(string path)
+    {
+        throw new Exception();
     }
 
     public IReadOnlyCollection<string> GetRelativePathsOfFolderSubFiles(string path)
     {
-        throw new NotImplementedException();
+        throw new Exception();
     }
 
-    public void CreateDirectory(string path)
+    public void CreateDirectory(string path) => _fs.CreateDirectory(Path.GetFullPath(path));
+
+    public bool Exists(string path)
     {
-        throw new NotImplementedException();
+        path = Path.GetFullPath(path);
+        return _fs.FileExists(path) || _fs.DirectoryExists(path);
     }
 
-    public bool Exists(string path) => _fs.FileExists(path) || _fs.DirectoryExists(path);
+    public bool FileExists(string path)
+    {
+        path = Path.GetFullPath(path);
+        return _fs.FileExists(path);
+    }
 
-    public bool FileExists(string path) => _fs.FileExists(path);
-
-    public bool DirectoryExists(string path) => _fs.DirectoryExists(path);
+    public bool DirectoryExists(string path)
+    {
+        path = Path.GetFullPath(path);
+        return _fs.DirectoryExists(path);
+    }
 
     public void Dispose()
     {

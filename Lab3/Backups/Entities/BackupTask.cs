@@ -4,6 +4,7 @@ using Backups.Algorithms;
 using Backups.Archivers;
 using Backups.Interfaces;
 using Backups.Repository;
+using Backups.Storage;
 using Zio;
 using Zio.FileSystems;
 
@@ -56,13 +57,15 @@ public class BackupTask : IBackupTask
 
     public RestorePoint Working()
     {
-        string restorePointPath = $"{Name}/{_idRestorePoints}/";
+        DateTime dateTime = DateTime.Now;
+        var data = $"{dateTime.Day}.{dateTime.Month}.{dateTime.Year}";
+        string restorePointPath = $"{Name}/{data} {dateTime.Hour}h.{dateTime.Minute}m.{dateTime.Second}s.{dateTime.Millisecond}ms/";
         Repository.CreateDirectory(restorePointPath);
 
-        List<Storage> storages =
-            Algorithm.Save(Repository, Archiver, _backupObjects, $"{Repository.FullPath}/{Name}/{_idRestorePoints}");
+        IStorage storage =
+            Algorithm.Save(Repository, Archiver, _backupObjects, $"{Repository.FullPath}/{restorePointPath}");
 
-        var restorePoint = new RestorePoint(restorePointPath, Repository, _backupObjects);
+        var restorePoint = new RestorePoint(_idRestorePoints.ToString(), dateTime, storage, _backupObjects);
         Backup.AddRestorePoint(restorePoint);
         _idRestorePoints++;
         return restorePoint;

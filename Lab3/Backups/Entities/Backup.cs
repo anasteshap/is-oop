@@ -4,7 +4,7 @@ namespace Backups.Entities;
 
 public class Backup : IBackup
 {
-    private List<RestorePoint> _restorePoints = new ();
+    private readonly List<RestorePoint> _restorePoints = new ();
     public Backup() { }
 
     public IReadOnlyCollection<RestorePoint> RestorePoints() => _restorePoints;

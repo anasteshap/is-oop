@@ -3,7 +3,7 @@ using Backups.Visitor;
 
 namespace Backups.Component;
 
-public class FolderComponent : IFolderComponent
+public class FolderComponent : IComponent
 {
     private readonly Func<IReadOnlyCollection<IComponent>> _componentsCreator;
 

@@ -2,10 +2,11 @@ using Backups.Archivers;
 using Backups.Entities;
 using Backups.Interfaces;
 using Backups.Repository;
+using Backups.Storage;
 
 namespace Backups.Algorithms;
 
 public interface IAlgorithm
 {
-    List<Storage> Save(IRepository repository, IArchiver archiver, List<IBackupObject> backupObjects, string fullPathOfRestorePoint);
+    IStorage Save(IRepository repository, IArchiver archiver, List<IBackupObject> backupObjects, string fullPathOfRestorePoint);
 }
