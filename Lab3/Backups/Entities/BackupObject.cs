@@ -1,4 +1,5 @@
-using Backups.Inter;
+using Backups.Component;
+using Backups.Interfaces;
 using Backups.Repository;
 
 namespace Backups.Entities;
@@ -12,8 +13,8 @@ public class BackupObject : IBackupObject
             throw new Exception();
         }
 
-        FullName = fileName;
-        if (!repository.Exists(FullName))
+        RelativePath = fileName;
+        if (!repository.Exists(RelativePath))
         {
             throw new Exception();
         }
@@ -21,6 +22,7 @@ public class BackupObject : IBackupObject
         Repository = repository;
     }
 
-    public string FullName { get; }
+    public string RelativePath { get; }
     public IRepository Repository { get; }
+    public IComponent GetRepoComponent() => Repository.GetRepositoryComponent(RelativePath);
 }

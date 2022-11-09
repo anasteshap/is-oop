@@ -1,11 +1,10 @@
 using Backups.Component;
-using Backups.Inter;
 
 namespace Backups.Repository;
 
 public interface IRepository
 {
-    string FullName { get; }
+    string FullPath { get; }
     Stream OpenStream(string path);
     void SaveTo(string path, Stream stream);
     IRepository GetSubRepository(string partialPath);

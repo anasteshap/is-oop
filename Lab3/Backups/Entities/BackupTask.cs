@@ -2,7 +2,7 @@ using System;
 using System.IO.Compression;
 using Backups.Algorithms;
 using Backups.Archivers;
-using Backups.Inter;
+using Backups.Interfaces;
 using Backups.Repository;
 using Zio;
 using Zio.FileSystems;
@@ -26,7 +26,7 @@ public class BackupTask : IBackupTask
         Algorithm = algorithm;
         Archiver = archiver;
         Backup = new Backup();
-        Repository.CreateDirectory($"{repository.FullName}/{name}");
+        Repository.CreateDirectory($"{repository.FullPath}/{name}");
     }
 
     public string Name { get; }
@@ -60,7 +60,7 @@ public class BackupTask : IBackupTask
         Repository.CreateDirectory(restorePointPath);
 
         List<Storage> storages =
-            Algorithm.Save(Repository, Archiver, _backupObjects, $"{Repository.FullName}/{Name}/{_idRestorePoints}");
+            Algorithm.Save(Repository, Archiver, _backupObjects, $"{Repository.FullPath}/{Name}/{_idRestorePoints}");
 
         var restorePoint = new RestorePoint(restorePointPath, Repository, _backupObjects);
         Backup.AddRestorePoint(restorePoint);

@@ -6,24 +6,19 @@ namespace Backups.Component;
 
 public class FileComponent : IFileComponent
 {
-    private readonly Func<string, Stream> _streamCreator;
-    public FileComponent(string path, Func<string, Stream> streamCreator)
+    private readonly Func<Stream> _streamCreator;
+    public FileComponent(string name, Func<Stream> streamCreator)
     {
-        if (string.IsNullOrEmpty(path))
-        {
-            throw new Exception();
-        }
-
-        FullName = path;
         _streamCreator = streamCreator;
+        Name = name;
     }
 
-    public string FullName { get; }
+    public string Name { get; }
 
     public void Accept(IVisitor visitor)
     {
         visitor.CreateZipFile(this);
     }
 
-    public Stream OpenStream() => _streamCreator(FullName);
+    public Stream OpenStream() => _streamCreator();
 }

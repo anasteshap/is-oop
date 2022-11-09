@@ -1,9 +1,11 @@
+using Backups.Component;
 using Backups.Repository;
 
-namespace Backups.Inter;
+namespace Backups.Interfaces;
 
 public interface IBackupObject
 {
-    public string FullName { get; }
-    public IRepository Repository { get; }
+    string RelativePath { get; }
+    IRepository Repository { get; }
+    IComponent GetRepoComponent();
 }

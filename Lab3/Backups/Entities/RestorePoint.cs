@@ -1,4 +1,4 @@
-using Backups.Inter;
+using Backups.Interfaces;
 using Backups.Repository;
 
 namespace Backups.Entities;
@@ -6,15 +6,15 @@ namespace Backups.Entities;
 public class RestorePoint
 {
     private readonly List<IBackupObject> _backupObjects;
-    public RestorePoint(string path, IRepository repository, List<IBackupObject> backupObjects)
+    public RestorePoint(string relativePath, IRepository repository, List<IBackupObject> backupObjects)
     {
-        FullName = Path.GetFullPath(path);
+        RelativePath = Path.GetFullPath(relativePath);
         Repository = repository;
         CreationDate = DateTime.Now;
         _backupObjects = backupObjects;
     }
 
-    public string FullName { get; }
+    public string RelativePath { get; }
     public IRepository Repository { get; }
     public DateTime CreationDate { get; }
     public IReadOnlyCollection<IBackupObject> BackupObjects() => _backupObjects;

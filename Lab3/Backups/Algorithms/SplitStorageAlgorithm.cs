@@ -1,20 +1,20 @@
 using Backups.Archivers;
 using Backups.Component;
 using Backups.Entities;
-using Backups.Inter;
+using Backups.Interfaces;
 using Backups.Repository;
 
 namespace Backups.Algorithms;
 
 public class SplitStorageAlgorithm : IAlgorithm
 {
-    public List<Storage> Save(IRepository repository, IArchiver archiver, List<IBackupObject> backupObjects, string pathOfRestorePoint)
+    public List<Storage> Save(IRepository repository, IArchiver archiver, List<IBackupObject> backupObjects, string fullPathOfRestorePoint)
     {
         backupObjects
             .ForEach(x => archiver.Archive(
-                    new List<IComponent>() { repository.GetRepositoryComponent(x.FullName) }, // тут передается один компонент всегда
+                    new List<IComponent>() { x.GetRepoComponent() }, // тут передается один компонент всегда
                     repository,
-                    CreatePathForZip(pathOfRestorePoint, x.FullName + "_")));
+                    CreatePathForZip(fullPathOfRestorePoint, x.RelativePath + "_")));
 
         var storages = new List<Storage>();
         return storages;

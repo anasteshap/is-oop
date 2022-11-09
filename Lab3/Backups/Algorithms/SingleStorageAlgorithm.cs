@@ -2,20 +2,20 @@ using System.IO.Compression;
 using Backups.Archivers;
 using Backups.Component;
 using Backups.Entities;
-using Backups.Inter;
+using Backups.Interfaces;
 using Backups.Repository;
 
 namespace Backups.Algorithms;
 
 public class SingleStorageAlgorithm : IAlgorithm
 {
-    public List<Storage> Save(IRepository repository, IArchiver archiver, List<IBackupObject> backupObjects, string pathOfRestorePoint)
+    public List<Storage> Save(IRepository repository, IArchiver archiver, List<IBackupObject> backupObjects, string fullPathOfRestorePoint)
     {
         var repoComponents = backupObjects
-            .Select(x => repository.GetRepositoryComponent(x.FullName))
+            .Select(x => x.GetRepoComponent())
             .ToList();
 
-        archiver.Archive(repoComponents, repository, CreatePathForZip(pathOfRestorePoint));
+        archiver.Archive(repoComponents, repository, CreatePathForZip(fullPathOfRestorePoint));
 
         var storages = new List<Storage>();
         return storages;

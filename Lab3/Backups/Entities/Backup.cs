@@ -1,4 +1,4 @@
-using Backups.Inter;
+using Backups.Interfaces;
 
 namespace Backups.Entities;
 

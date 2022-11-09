@@ -1,5 +1,4 @@
 using Backups.Component;
-using Backups.Inter;
 using Zio;
 using Zio.FileSystems;
 
@@ -10,21 +9,21 @@ public class InMemoryRepository : IRepository, IDisposable
     private readonly MemoryFileSystem _fs;
     private bool _disposed;
 
-    public InMemoryRepository(string name)
+    public InMemoryRepository(string fullPath)
     {
-        if (string.IsNullOrEmpty(name))
+        if (string.IsNullOrEmpty(fullPath))
         {
             throw new Exception();
         }
 
         _fs = new MemoryFileSystem();
-        _fs.Name = name;
-        FullName = name;
+        _fs.Name = fullPath;
+        FullPath = fullPath;
     }
 
     ~InMemoryRepository() => Dispose(false);
 
-    public string FullName { get; }
+    public string FullPath { get; }
 
     public Stream OpenStream(string path)
     {
@@ -48,7 +47,7 @@ public class InMemoryRepository : IRepository, IDisposable
         /*var a = new SubFileSystem(_fs, partialPath);
         a.
         var newFs = new InMemoryRepository();
-        newFs.FullName = FullName*/
+        newFs.RelativePath = RelativePath*/
     }
 
     public IComponent GetRepositoryComponent(string partialPath)

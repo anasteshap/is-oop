@@ -3,7 +3,7 @@ using Backups.Archivers;
 using Backups.Entities;
 using Backups.Repository;
 
-namespace Backups.Inter;
+namespace Backups.Interfaces;
 
 public interface IBackupTask
 {

@@ -7,9 +7,9 @@ namespace Backups.Archivers;
 
 public class Archiver : IArchiver
 {
-    public void Archive(List<IComponent> components, IRepository repository, string path)
+    public void Archive(List<IComponent> components, IRepository repository, string zipPath)
     {
-        Stream stream = repository.OpenStream(path);
+        Stream stream = repository.OpenStream(zipPath);
         using var archive = new ZipArchive(stream, ZipArchiveMode.Update);
         var visitor = new ArchiveVisitor(archive);
 

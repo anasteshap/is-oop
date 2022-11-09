@@ -1,6 +1,6 @@
 using Backups.Entities;
 
-namespace Backups.Inter;
+namespace Backups.Interfaces;
 
 public interface IBackup
 {

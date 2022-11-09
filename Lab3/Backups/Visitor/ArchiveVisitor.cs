@@ -22,14 +22,14 @@ public class ArchiveVisitor : IVisitor
         using Stream streamFrom = fileComponent.OpenStream();
 
         ZipArchive archive = _archives.Peek();
-        Stream zipToOpen = archive.CreateEntry(Path.GetFileName(fileComponent.FullName), CompressionLevel.Optimal).Open();
+        Stream zipToOpen = archive.CreateEntry(fileComponent.Name, CompressionLevel.Optimal).Open();
         streamFrom.CopyTo(zipToOpen);
     }
 
     public void CreateZipFile(FolderComponent folderComponent)
     {
         Stream zipToOpen = _archives.Peek()
-            .CreateEntry($"{Path.GetFileName(folderComponent.FullName)}.zip", CompressionLevel.Optimal)
+            .CreateEntry($"{folderComponent.Name}.zip", CompressionLevel.Optimal)
             .Open();
 
         using var archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update);

@@ -6,7 +6,7 @@ namespace Backups.Component;
 
 public interface IComponent
 {
-    string FullName { get; }
+    string Name { get; }
     void Accept(IVisitor visitor);
     Stream OpenStream();
 }

@@ -5,21 +5,17 @@ namespace Backups.Component;
 
 public class FolderComponent : IFolderComponent
 {
-    private readonly Func<string, IReadOnlyCollection<IComponent>> _componentsCreator;
-    public FolderComponent(string path, Func<string, IReadOnlyCollection<IComponent>> componentsCreator)
-    {
-        if (string.IsNullOrEmpty(path))
-        {
-            throw new Exception();
-        }
+    private readonly Func<IReadOnlyCollection<IComponent>> _componentsCreator;
 
-        FullName = path;
+    public FolderComponent(string name, Func<IReadOnlyCollection<IComponent>> componentsCreator)
+    {
         _componentsCreator = componentsCreator;
+        Name = name;
     }
 
-    public string FullName { get; }
+    public IReadOnlyCollection<IComponent> Components => _componentsCreator();
 
-    public IReadOnlyCollection<IComponent> Components => _componentsCreator(FullName);
+    public string Name { get; }
 
     public void Accept(IVisitor visitor)
     {
