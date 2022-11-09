@@ -39,10 +39,10 @@ public class FileSystemRepository : IRepository
     {
         if (DirectoryExists(partialPath))
         {
-            return new FolderComponent(this, partialPath, _componentsCreator);
+            return new FolderComponent(partialPath, _componentsCreator);
         }
 
-        return new FileComponent(this, partialPath, _streamCreator);
+        return new FileComponent(partialPath, _streamCreator);
     }
 
     public IReadOnlyCollection<IComponent> GetComponents(string path)
@@ -50,11 +50,11 @@ public class FileSystemRepository : IRepository
         var relativePaths = GetRelativePathsOfFolderSubFiles(path).ToList();
         var directories = relativePaths
             .Where(DirectoryExists)
-            .Select(x => new FolderComponent(this, x, _componentsCreator))
+            .Select(x => new FolderComponent(x, _componentsCreator))
             .ToList();
         var files = relativePaths
             .Where(FileExists)
-            .Select(x => new FileComponent(this, x, _streamCreator))
+            .Select(x => new FileComponent(x, _streamCreator))
             .ToList();
 
         return new List<IComponent>().Concat(directories).Concat(files).ToList();

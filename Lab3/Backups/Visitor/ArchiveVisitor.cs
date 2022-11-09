@@ -19,19 +19,17 @@ public class ArchiveVisitor : IVisitor
 
     public void CreateZipFile(FileComponent fileComponent)
     {
-        string fileFullName = Path.Combine(fileComponent.Repository.FullName, fileComponent.FullName);
-        using Stream streamFrom = fileComponent.Repository.OpenStream(fileComponent.FullName);
+        using Stream streamFrom = fileComponent.OpenStream();
 
         ZipArchive archive = _archives.Peek();
-        Stream zipToOpen = archive.CreateEntry(Path.GetFileName(fileFullName), CompressionLevel.Optimal).Open();
+        Stream zipToOpen = archive.CreateEntry(Path.GetFileName(fileComponent.FullName), CompressionLevel.Optimal).Open();
         streamFrom.CopyTo(zipToOpen);
     }
 
     public void CreateZipFile(FolderComponent folderComponent)
     {
-        string folderFullName = Path.Combine(folderComponent.Repository.FullName, folderComponent.FullName);
         Stream zipToOpen = _archives.Peek()
-            .CreateEntry($"{Path.GetFileName(folderFullName)}.zip", CompressionLevel.Optimal)
+            .CreateEntry($"{Path.GetFileName(folderComponent.FullName)}.zip", CompressionLevel.Optimal)
             .Open();
 
         using var archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update);
