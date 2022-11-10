@@ -7,7 +7,7 @@ namespace Backups.Entities;
 public class RestorePoint
 {
     private readonly List<IBackupObject> _backupObjects;
-    public RestorePoint(string name, DateTime dateTime, IStorage storage, List<IBackupObject> backupObjects)
+    public RestorePoint(string name, DateTime dateTime, SplitStorage storage, List<IBackupObject> backupObjects)
     {
         Name = name;
         Storage = storage;
@@ -16,7 +16,7 @@ public class RestorePoint
     }
 
     public string Name { get; }
-    public IStorage Storage { get; }
+    public SplitStorage Storage { get; }
     public DateTime CreationDate { get; }
     public IReadOnlyCollection<IBackupObject> BackupObjects() => _backupObjects;
 }

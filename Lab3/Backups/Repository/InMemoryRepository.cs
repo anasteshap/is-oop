@@ -11,15 +11,10 @@ public class InMemoryRepository : IRepository, IDisposable
     private readonly MemoryFileSystem _fs;
     private bool _disposed;
 
-    public InMemoryRepository(string fullPath)
+    public InMemoryRepository()
     {
-        if (string.IsNullOrEmpty(fullPath))
-        {
-            throw new Exception();
-        }
-
         _fs = new MemoryFileSystem();
-        FullPath = string.Empty;
+        FullPath = "/";
         _streamCreator = OpenStream;
         _componentsCreator = GetComponents;
     }
@@ -31,12 +26,7 @@ public class InMemoryRepository : IRepository, IDisposable
     public Stream OpenStream(string path)
     {
         path = Path.GetFullPath(path);
-        if (_fs.FileExists(path))
-        {
-            _fs.OpenFile(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-        }
-
-        return _fs.CreateFile(path);
+        return _fs.OpenFile(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
     }
 
     public void SaveTo(string path, Stream stream)
@@ -56,7 +46,7 @@ public class InMemoryRepository : IRepository, IDisposable
 
     public IComponent GetRepositoryComponent(string partialPath)
     {
-        if (DirectoryExists(partialPath))
+        if (_fs.DirectoryExists(Path.GetFullPath(partialPath, FullPath)))
         {
             return new FolderComponent(Path.GetFileName(partialPath), () => _componentsCreator(partialPath));
         }
@@ -66,7 +56,18 @@ public class InMemoryRepository : IRepository, IDisposable
 
     public IReadOnlyCollection<IComponent> GetComponents(string path)
     {
-        throw new Exception();
+        DirectoryEntry dir = _fs.GetDirectoryEntry(Path.GetFullPath(path, FullPath));
+        var directories = dir
+            .EnumerateDirectories()
+            .Where(x => DirectoryExists(x.FullName))
+            .Select(x => new FolderComponent(x.Name, () => _componentsCreator(x.FullName)))
+            .ToList();
+        var files = dir
+            .EnumerateFiles()
+            .Where(x => FileExists(x.FullName))
+            .Select(x => new FolderComponent(x.Name, () => _componentsCreator(x.FullName)))
+            .ToList();
+        return new List<IComponent>().Concat(directories).Concat(files).ToList();
     }
 
     public IReadOnlyCollection<string> GetRelativePathsOfFolderSubFiles(string path)
@@ -74,23 +75,23 @@ public class InMemoryRepository : IRepository, IDisposable
         throw new Exception();
     }
 
-    public void CreateDirectory(string path) => _fs.CreateDirectory(Path.GetFullPath(path));
+    public void CreateDirectory(string path) => _fs.CreateDirectory(Path.GetFullPath(path, FullPath));
 
     public bool Exists(string path)
     {
-        path = Path.GetFullPath(path);
+        path = Path.GetFullPath(path, FullPath);
         return _fs.FileExists(path) || _fs.DirectoryExists(path);
     }
 
     public bool FileExists(string path)
     {
-        path = Path.GetFullPath(path);
+        path = Path.GetFullPath(path, FullPath);
         return _fs.FileExists(path);
     }
 
     public bool DirectoryExists(string path)
     {
-        path = Path.GetFullPath(path);
+        path = Path.GetFullPath(path, FullPath);
         return _fs.DirectoryExists(path);
     }
 
