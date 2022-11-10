@@ -19,5 +19,5 @@ public class SingleStorageAlgorithm : IAlgorithm
         return storage;
     }
 
-    private string CreatePathForZip(string folderPath) => Path.Combine(folderPath, "Archive.zip");
+    private static string CreatePathForZip(string folderPath) => Path.Combine(folderPath, "Archive.zip");
 }

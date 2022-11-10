@@ -1,4 +1,5 @@
 using Backups.Component;
+using Backups.Exceptions;
 using Backups.Interfaces;
 using Backups.Repository;
 
@@ -8,15 +9,15 @@ public class BackupObject : IBackupObject
 {
     public BackupObject(IRepository repository, string fileName)
     {
-        if (string.IsNullOrEmpty(fileName) || repository is null)
+        if (string.IsNullOrEmpty(fileName))
         {
-            throw new Exception();
+            throw NullException.InvalidName();
         }
 
         RelativePath = fileName;
         if (!repository.Exists(RelativePath))
         {
-            throw new Exception();
+            throw RepositoryException.ObjectDoesNotExist(RelativePath);
         }
 
         Repository = repository;

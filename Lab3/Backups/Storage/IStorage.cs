@@ -4,5 +4,5 @@ namespace Backups.Storage;
 
 public interface IStorage
 {
-    IComponent GetRepoComponents();
+    IReadOnlyCollection<IComponent> GetRepoComponents();
 }

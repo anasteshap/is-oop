@@ -35,22 +35,26 @@ public class BackupTests
     [Fact]
     public void Test2()
     {
-        var rep = new InMemoryRepository();
+        var rep = new InMemoryRepository("/");
         rep.CreateDirectory("a");
+        rep.CreateFile("a/copy.txt");
+        rep.CreateFile("copy.txt");
         rep.CreateDirectory("b");
+
         var backupObject1 = new BackupObject(rep, "a");
         var backupObject2 = new BackupObject(rep, "b");
+        var backupObject3 = new BackupObject(rep, "copy.txt");
 
         var backupTask1 = new BackupTask("Task1", rep, new SplitStorageAlgorithm(), new Archiver());
         backupTask1.AddBackupObject(backupObject1);
         backupTask1.AddBackupObject(backupObject2);
         RestorePoint rp11 = backupTask1.Working();
-        Assert.True(rep.DirectoryExists($"{rp11.Name}"));
+        Assert.True(rep.DirectoryExists($"{rp11.RelativePath}"));
         Assert.True(rp11.Storage.Storages.Count == 2);
 
         backupTask1.RemoveBackupObject(backupObject1);
         RestorePoint rp12 = backupTask1.Working();
-        Assert.True(rep.DirectoryExists($"{rp12.Name}"));
+        Assert.True(rep.DirectoryExists($"{rp12.RelativePath}"));
         Assert.True(rp12.Storage.Storages.Count == 1);
 
         Assert.True(backupTask1.Backup.RestorePoints().Count == 2);

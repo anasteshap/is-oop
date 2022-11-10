@@ -14,9 +14,9 @@ public class Archiver : IArchiver
         return Archive(new List<IComponent>() { component }, repository, zipPath);
     }
 
-    public ZipStorage Archive(List<IComponent> components, IRepository repository, string zipPath)
+    public ZipStorage Archive(List<IComponent> components, IRepository repository, string zipPath) // zipPath = Archive.zip or temp.zip
     {
-        Stream stream = repository.OpenStream(zipPath);
+        using Stream stream = repository.OpenStream(zipPath); // using
         using var archive = new ZipArchive(stream, ZipArchiveMode.Update);
         var visitor = new ArchiveVisitor(archive);
 

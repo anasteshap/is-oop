@@ -1,3 +1,4 @@
+using Backups.Exceptions;
 using Backups.Interfaces;
 
 namespace Backups.Entities;
@@ -5,7 +6,6 @@ namespace Backups.Entities;
 public class Backup : IBackup
 {
     private readonly List<RestorePoint> _restorePoints = new ();
-    public Backup() { }
 
     public IReadOnlyCollection<RestorePoint> RestorePoints() => _restorePoints;
 
@@ -13,7 +13,7 @@ public class Backup : IBackup
     {
         if (_restorePoints.Contains(restorePoint))
         {
-            throw new Exception();
+            throw BackupException.RestorePointAlreadyExists(restorePoint.RelativePath);
         }
 
         _restorePoints.Add(restorePoint);
@@ -23,7 +23,7 @@ public class Backup : IBackup
     {
         if (!_restorePoints.Remove(restorePoint))
         {
-            throw new Exception();
+            throw BackupException.RestorePointDoesNotExist(restorePoint.RelativePath);
         }
     }
 }

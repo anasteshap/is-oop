@@ -1,25 +1,21 @@
-using System;
-using System.IO.Compression;
 using Backups.Algorithms;
 using Backups.Archivers;
+using Backups.Exceptions;
 using Backups.Interfaces;
 using Backups.Repository;
 using Backups.Storage;
-using Zio;
-using Zio.FileSystems;
 
 namespace Backups.Entities;
 
 public class BackupTask : IBackupTask
 {
     private readonly List<IBackupObject> _backupObjects = new ();
-    private int _idRestorePoints = 1;
 
     public BackupTask(string name, IRepository repository, IAlgorithm algorithm, IArchiver archiver)
     {
         if (string.IsNullOrEmpty(name))
         {
-            throw new Exception();
+            throw NullException.InvalidName();
         }
 
         Name = name;
@@ -41,7 +37,7 @@ public class BackupTask : IBackupTask
     {
         if (_backupObjects.Contains(backupObject))
         {
-            throw new Exception();
+            throw BackupException.BackupObjectAlreadyExists(backupObject.RelativePath);
         }
 
         _backupObjects.Add(backupObject);
@@ -51,7 +47,7 @@ public class BackupTask : IBackupTask
     {
         if (!_backupObjects.Remove(backupObject))
         {
-            throw new Exception();
+            throw BackupException.BackupObjectDoesNotExist(backupObject.RelativePath);
         }
     }
 
@@ -67,7 +63,6 @@ public class BackupTask : IBackupTask
 
         var restorePoint = new RestorePoint(restorePointPath, dateTime, storage, _backupObjects);
         Backup.AddRestorePoint(restorePoint);
-        _idRestorePoints++;
         return restorePoint;
     }
 }

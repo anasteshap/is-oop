@@ -8,5 +8,4 @@ public interface IComponent
 {
     string Name { get; }
     void Accept(IVisitor visitor);
-    Stream OpenStream();
 }

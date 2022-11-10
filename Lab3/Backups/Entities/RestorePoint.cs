@@ -1,3 +1,4 @@
+using Backups.Exceptions;
 using Backups.Interfaces;
 using Backups.Repository;
 using Backups.Storage;
@@ -7,15 +8,20 @@ namespace Backups.Entities;
 public class RestorePoint
 {
     private readonly List<IBackupObject> _backupObjects;
-    public RestorePoint(string name, DateTime dateTime, SplitStorage storage, List<IBackupObject> backupObjects)
+    public RestorePoint(string relativePath, DateTime dateTime, SplitStorage storage, List<IBackupObject> backupObjects)
     {
-        Name = name;
+        if (string.IsNullOrEmpty(relativePath))
+        {
+            throw NullException.InvalidName();
+        }
+
+        RelativePath = relativePath;
         Storage = storage;
         CreationDate = dateTime;
         _backupObjects = backupObjects;
     }
 
-    public string Name { get; }
+    public string RelativePath { get; }
     public SplitStorage Storage { get; }
     public DateTime CreationDate { get; }
     public IReadOnlyCollection<IBackupObject> BackupObjects() => _backupObjects;

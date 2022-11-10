@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using Backups.Component;
+using Backups.Exceptions;
 
 namespace Backups.ZipObjects;
 
@@ -10,7 +11,7 @@ public class ZipFolder : IZipObject
     {
         if (string.IsNullOrEmpty(name))
         {
-            throw new Exception();
+            throw NullException.InvalidName();
         }
 
         Name = name;

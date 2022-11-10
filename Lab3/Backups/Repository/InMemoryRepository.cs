@@ -1,4 +1,5 @@
 using Backups.Component;
+using Backups.Exceptions;
 using Zio;
 using Zio.FileSystems;
 
@@ -11,10 +12,15 @@ public class InMemoryRepository : IRepository, IDisposable
     private readonly MemoryFileSystem _fs;
     private bool _disposed;
 
-    public InMemoryRepository()
+    public InMemoryRepository(string fullPath)
     {
+        if (string.IsNullOrEmpty(fullPath))
+        {
+            throw NullException.InvalidName();
+        }
+
         _fs = new MemoryFileSystem();
-        FullPath = "/";
+        FullPath = fullPath;
         _streamCreator = OpenStream;
         _componentsCreator = GetComponents;
     }
@@ -25,33 +31,27 @@ public class InMemoryRepository : IRepository, IDisposable
 
     public Stream OpenStream(string path)
     {
-        path = Path.GetFullPath(path);
+        path = Path.GetFullPath(path, FullPath);
         return _fs.OpenFile(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
     }
 
     public void SaveTo(string path, Stream stream)
     {
-        throw new NotImplementedException();
+        path = Path.GetFullPath(path, FullPath);
+        using Stream newStream = _fs.OpenFile(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+        stream.CopyTo(newStream);
     }
 
-    public IRepository GetSubRepository(string partialPath)
-    {
-        throw new NotImplementedException();
-
-        /*var a = new SubFileSystem(_fs, partialPath);
-        a.
-        var newFs = new InMemoryRepository();
-        newFs.RelativePath = RelativePath*/
-    }
+    public IRepository GetSubRepository(string partialPath) => new InMemoryRepository(Path.Combine(FullPath, partialPath));
 
     public IComponent GetRepositoryComponent(string partialPath)
     {
         if (_fs.DirectoryExists(Path.GetFullPath(partialPath, FullPath)))
         {
-            return new FolderComponent(Path.GetFileName(partialPath), () => _componentsCreator(partialPath));
+            return new FolderComponent(Path.GetFileName(partialPath), () => _componentsCreator(Path.GetFullPath(partialPath, FullPath)));
         }
 
-        return new FileComponent(Path.GetFileName(partialPath), () => _streamCreator(partialPath));
+        return new FileComponent(Path.GetFileName(partialPath), () => _streamCreator(Path.GetFullPath(partialPath, FullPath)));
     }
 
     public IReadOnlyCollection<IComponent> GetComponents(string path)
@@ -65,17 +65,13 @@ public class InMemoryRepository : IRepository, IDisposable
         var files = dir
             .EnumerateFiles()
             .Where(x => FileExists(x.FullName))
-            .Select(x => new FolderComponent(x.Name, () => _componentsCreator(x.FullName)))
+            .Select(x => new FileComponent(x.Name, () => _streamCreator(x.FullName)))
             .ToList();
         return new List<IComponent>().Concat(directories).Concat(files).ToList();
     }
 
-    public IReadOnlyCollection<string> GetRelativePathsOfFolderSubFiles(string path)
-    {
-        throw new Exception();
-    }
-
     public void CreateDirectory(string path) => _fs.CreateDirectory(Path.GetFullPath(path, FullPath));
+    public void CreateFile(string path) => _fs.CreateFile(Path.GetFullPath(path, FullPath)).Dispose();
 
     public bool Exists(string path)
     {

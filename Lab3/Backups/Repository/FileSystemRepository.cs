@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using Backups.Component;
+using Backups.Exceptions;
 
 namespace Backups.Repository;
 
@@ -12,7 +13,7 @@ public class FileSystemRepository : IRepository
     {
         if (string.IsNullOrEmpty(fullPath))
         {
-            throw new Exception();
+            throw NullException.InvalidName();
         }
 
         FullPath = fullPath;
@@ -27,12 +28,12 @@ public class FileSystemRepository : IRepository
 
     public void SaveTo(string path, Stream stream)
     {
-        CreateDirectory(path);
+        path = Path.GetFullPath(path, FullPath);
         var newStream = new FileStream(Path.GetFullPath(path, FullPath), FileMode.OpenOrCreate, FileAccess.Write);
         stream.CopyTo(newStream);
     }
 
-    public IRepository GetSubRepository(string partialPath) => new FileSystemRepository($"{FullPath}/{partialPath}");
+    public IRepository GetSubRepository(string partialPath) => new FileSystemRepository(Path.Combine(FullPath, partialPath));
 
     public IComponent GetRepositoryComponent(string partialPath)
     {
@@ -46,36 +47,20 @@ public class FileSystemRepository : IRepository
 
     public IReadOnlyCollection<IComponent> GetComponents(string path)
     {
-        var relativePaths = GetRelativePathsOfFolderSubFiles(path).ToList();
-        var directories = relativePaths
-            .Where(DirectoryExists)
-            .Select(x => new FolderComponent(Path.GetFileName(x), () => _componentsCreator(x)))
+        path = Path.GetFullPath(path, FullPath);
+        if (!Directory.Exists(path))
+        {
+            throw RepositoryException.DirectoryDoesNotExist(path);
+        }
+
+        var directories = Directory.GetDirectories(path)
+            .Select(x => new FolderComponent(Path.GetFileName(x), () => _componentsCreator(x))) // x -> Path.GetRelativePath(FullPath, a)
             .ToList();
-        var files = relativePaths
-            .Where(FileExists)
+        var files = Directory.GetFiles(path)
             .Select(x => new FileComponent(Path.GetFileName(x), () => _streamCreator(x)))
             .ToList();
 
         return new List<IComponent>().Concat(directories).Concat(files).ToList();
-    }
-
-    public IReadOnlyCollection<string> GetRelativePathsOfFolderSubFiles(string path)
-    {
-        if (!Directory.Exists(Path.GetFullPath(path, FullPath)))
-        {
-            throw new Exception();
-        }
-
-        var files = Directory.GetFiles(Path.GetFullPath(path, $"{FullPath}")).ToList();
-        var directories = Directory.GetDirectories(Path.GetFullPath(path, $"{FullPath}")).ToList();
-        var infos = files.Concat(directories).ToList();
-        var newList = new List<string>();
-        foreach (string a in infos)
-        {
-            newList.Add(Path.GetRelativePath(FullPath, a));
-        }
-
-        return newList;
     }
 
     public void CreateDirectory(string path) => Directory.CreateDirectory(Path.GetFullPath(path, FullPath));

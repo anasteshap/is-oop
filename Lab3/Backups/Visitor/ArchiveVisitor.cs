@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using Backups.Component;
+using Backups.Exceptions;
 using Backups.ZipObjects;
 using ZipFile = Backups.ZipObjects.ZipFile;
 
@@ -14,19 +15,28 @@ public class ArchiveVisitor : IVisitor
     {
         if (zipArchive is null)
         {
-            throw new Exception();
+            throw NullException.InvalidName();
         }
 
         _archives.Push(zipArchive);
         _listsOfZipFiles.Push(new List<IZipObject>());
     }
 
-    public IReadOnlyCollection<IZipObject> GetZipObjects() => _listsOfZipFiles.Peek();
+    public IReadOnlyCollection<IZipObject> GetZipObjects()
+    {
+        if (_listsOfZipFiles.Count is 0 or > 1)
+        {
+            throw VisitorException.InvalidZipObjects();
+        }
+
+        return _listsOfZipFiles.Peek();
+    }
+
     public void CreateZipFile(FileComponent fileComponent)
     {
         using Stream streamFrom = fileComponent.OpenStream();
         ZipArchive archive = _archives.Peek();
-        Stream zipToOpen = archive.CreateEntry(fileComponent.Name, CompressionLevel.Optimal).Open();
+        using Stream zipToOpen = archive.CreateEntry(fileComponent.Name, CompressionLevel.Optimal).Open();
         streamFrom.CopyTo(zipToOpen);
 
         var zipFile = new ZipFile(fileComponent.Name);
@@ -35,7 +45,7 @@ public class ArchiveVisitor : IVisitor
 
     public void CreateZipFile(FolderComponent folderComponent)
     {
-        Stream zipToOpen = _archives.Peek()
+        using Stream zipToOpen = _archives.Peek()
             .CreateEntry($"{folderComponent.Name}.zip", CompressionLevel.Optimal)
             .Open();
 

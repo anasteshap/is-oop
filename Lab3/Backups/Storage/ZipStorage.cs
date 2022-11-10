@@ -1,4 +1,5 @@
 using Backups.Component;
+using Backups.Exceptions;
 using Backups.Repository;
 using Backups.ZipObjects;
 
@@ -10,7 +11,7 @@ public class ZipStorage : IStorage
     {
         if (string.IsNullOrEmpty(relativePath))
         {
-            throw new Exception();
+            throw NullException.InvalidName();
         }
 
         RelativePath = relativePath;
@@ -23,7 +24,7 @@ public class ZipStorage : IStorage
 
     public ZipFolder ZipFolder { get; }
 
-    public IComponent GetRepoComponents()
+    public IReadOnlyCollection<IComponent> GetRepoComponents()
     {
         throw new NotImplementedException();
     }

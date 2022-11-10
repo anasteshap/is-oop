@@ -14,13 +14,17 @@ public class SplitStorageAlgorithm : IAlgorithm
 
         foreach (IBackupObject obj in backupObjects)
         {
-            string zipPath = CreatePathForZip(fullPathOfRestorePoint, obj.RelativePath + "_");
-            ZipStorage zipStorage = archiver.Archive(obj.GetRepoComponent(), repository, zipPath);
+            string zipPath = CreatePathForZip(fullPathOfRestorePoint, obj.RelativePath);
+
+            ZipStorage zipStorage = obj.Repository.DirectoryExists(obj.RelativePath)
+                ? archiver.Archive(obj.Repository.GetComponents(obj.RelativePath).ToList(), repository, zipPath)
+                : archiver.Archive(obj.GetRepoComponent(), repository, zipPath);
+
             storage.AddZipStorage(zipStorage);
         }
 
         return storage;
     }
 
-    private string CreatePathForZip(string folderPath, string zipName) => Path.Combine(folderPath, $"{zipName}.zip");
+    private static string CreatePathForZip(string folderPath, string zipName) => Path.Combine(folderPath, $"{zipName}.zip");
 }

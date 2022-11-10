@@ -1,3 +1,4 @@
+using Backups.Exceptions;
 using Backups.Repository;
 using Backups.Visitor;
 
@@ -9,6 +10,11 @@ public class FolderComponent : IComponent
 
     public FolderComponent(string name, Func<IReadOnlyCollection<IComponent>> componentsCreator)
     {
+        if (string.IsNullOrEmpty(name))
+        {
+            throw NullException.InvalidName();
+        }
+
         _componentsCreator = componentsCreator;
         Name = name;
     }
@@ -20,10 +26,5 @@ public class FolderComponent : IComponent
     public void Accept(IVisitor visitor)
     {
         visitor.CreateZipFile(this);
-    }
-
-    public Stream OpenStream()
-    {
-        throw new NotImplementedException();
     }
 }
