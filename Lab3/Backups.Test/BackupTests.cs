@@ -12,7 +12,8 @@ public class BackupTests
     public void Test1()
     {
         string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        var rep = new FileSystemRepository(systemPath + "/rep");
+        const string systemPath1 = "/Users/anastasiia_pinchuk/Desktop";
+        var rep = new FileSystemRepository(systemPath1 + "/rep");
         var backupObject1 = new BackupObject(rep, "copy.xlsx");
         var backupObject2 = new BackupObject(rep, "temp");
 
