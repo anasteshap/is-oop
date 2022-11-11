@@ -16,9 +16,9 @@ public class SplitStorageAlgorithm : IAlgorithm
         {
             string zipPath = CreatePathForZip(fullPathOfRestorePoint, obj.RelativePath);
 
-            ZipStorage zipStorage = obj.Repository.DirectoryExists(obj.RelativePath)
-                ? archiver.Archive(obj.Repository.GetComponents(obj.RelativePath).ToList(), repository, zipPath)
-                : archiver.Archive(obj.GetRepoComponent(), repository, zipPath);
+            ZipStorage zipStorage = obj.Repository.FileExists(obj.RelativePath)
+                ? archiver.Archive(obj.GetRepoComponent(), repository, zipPath)
+                : archiver.Archive(obj.Repository.GetComponents(obj.RelativePath).ToList(), repository, zipPath);
 
             storage.AddZipStorage(zipStorage);
         }
