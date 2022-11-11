@@ -8,7 +8,7 @@ namespace Backups.Test;
 
 public class BackupTests
 {
-    /*[Fact]
+    [Fact]
     public void Test1()
     {
         string systemPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
@@ -30,7 +30,7 @@ public class BackupTests
         backupTask2.AddBackupObject(backupObject1);
         backupTask2.AddBackupObject(backupObject2);
         backupTask2.Working();
-    }*/
+    }
 
     [Fact]
     public void Test2()

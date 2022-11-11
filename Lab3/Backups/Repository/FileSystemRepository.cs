@@ -24,12 +24,12 @@ public class FileSystemRepository : IRepository
     public string FullPath { get; }
 
     public Stream OpenStream(string path) =>
-        new FileStream(Path.GetFullPath(path, FullPath), FileMode.OpenOrCreate, FileAccess.ReadWrite);
+        new FileStream(Path.Combine(FullPath, path), FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
     public void SaveTo(string path, Stream stream)
     {
         path = Path.GetFullPath(path, FullPath);
-        var newStream = new FileStream(Path.GetFullPath(path, FullPath), FileMode.OpenOrCreate, FileAccess.Write);
+        var newStream = new FileStream(Path.Combine(FullPath, path), FileMode.OpenOrCreate, FileAccess.Write);
         stream.CopyTo(newStream);
     }
 
@@ -47,7 +47,7 @@ public class FileSystemRepository : IRepository
 
     public IReadOnlyCollection<IComponent> GetComponents(string path)
     {
-        path = Path.GetFullPath(path, FullPath);
+        path = Path.Combine(FullPath, path);
         if (!Directory.Exists(path))
         {
             throw RepositoryException.DirectoryDoesNotExist(path);
@@ -63,23 +63,23 @@ public class FileSystemRepository : IRepository
         return new List<IComponent>().Concat(directories).Concat(files).ToList();
     }
 
-    public void CreateDirectory(string path) => Directory.CreateDirectory(Path.GetFullPath(path, FullPath));
+    public void CreateDirectory(string path) => Directory.CreateDirectory(Path.Combine(FullPath, path));
 
     public bool Exists(string path)
     {
-        path = Path.GetFullPath(path, FullPath);
+        path = Path.Combine(FullPath, path);
         return Directory.Exists(path) || File.Exists(path);
     }
 
     public bool FileExists(string path)
     {
-        path = Path.GetFullPath(path, FullPath);
+        path = Path.Combine(FullPath, path);
         return File.Exists(path);
     }
 
     public bool DirectoryExists(string path)
     {
-        path = Path.GetFullPath(path, FullPath);
+        path = Path.Combine(FullPath, path);
         return Directory.Exists(path);
     }
 }
