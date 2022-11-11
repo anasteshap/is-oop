@@ -58,7 +58,7 @@ public class BackupTask : IBackupTask
         string restorePointPath = $"{Name}/{data} {dateTime.Hour}h.{dateTime.Minute}m.{dateTime.Second}s.{dateTime.Millisecond}ms/";
         Repository.CreateDirectory(restorePointPath);
 
-        SplitStorage storage =
+        IStorage storage =
             Algorithm.Save(Repository, Archiver, _backupObjects, $"{Repository.FullPath}/{restorePointPath}");
 
         var restorePoint = new RestorePoint(restorePointPath, dateTime, storage, _backupObjects);

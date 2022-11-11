@@ -8,5 +8,5 @@ namespace Backups.Algorithms;
 
 public interface IAlgorithm
 {
-    SplitStorage Save(IRepository repository, IArchiver archiver, List<IBackupObject> backupObjects, string fullPathOfRestorePoint);
+    IStorage Save(IRepository repository, IArchiver archiver, List<IBackupObject> backupObjects, string fullPathOfRestorePoint);
 }

@@ -39,16 +39,13 @@ public class ArchiveVisitor : IVisitor
         using Stream zipToOpen = archive.CreateEntry(fileComponent.Name, CompressionLevel.Optimal).Open();
         streamFrom.CopyTo(zipToOpen);
 
-        var zipFile = new ZipFile(fileComponent.Name);
+        var zipFile = new ZipFile(fileComponent.Name); // без .zip
         _listsOfZipFiles.Peek().Add(zipFile);
     }
 
     public void CreateZipFile(FolderComponent folderComponent)
     {
-        using Stream zipToOpen = _archives.Peek()
-            .CreateEntry($"{folderComponent.Name}.zip", CompressionLevel.Optimal)
-            .Open();
-
+        using Stream zipToOpen = _archives.Peek().CreateEntry($"{folderComponent.Name}.zip", CompressionLevel.Optimal).Open();
         using var archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update);
         _archives.Push(archive);
         _listsOfZipFiles.Push(new List<IZipObject>());
@@ -59,7 +56,7 @@ public class ArchiveVisitor : IVisitor
         }
 
         List<IZipObject> listOfZipFiles = _listsOfZipFiles.Pop();
-        var zipFolder = new ZipFolder(folderComponent.Name, listOfZipFiles);
+        var zipFolder = new ZipFolder($"{folderComponent.Name}.zip", listOfZipFiles); // c .zip
         _listsOfZipFiles.Peek().Add(zipFolder);
 
         _archives.Pop();

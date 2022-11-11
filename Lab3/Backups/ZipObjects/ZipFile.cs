@@ -17,9 +17,5 @@ public class ZipFile : IZipObject
     }
 
     public string Name { get; }
-
-    public IComponent GetRepoComponent(ZipArchiveEntry entry)
-    {
-        throw new NotImplementedException();
-    }
+    public IComponent GetRepoComponent(ZipArchiveEntry entry) => new FileComponent(Name, entry.Open);
 }

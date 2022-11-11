@@ -8,7 +8,7 @@ namespace Backups.Entities;
 public class RestorePoint
 {
     private readonly List<IBackupObject> _backupObjects;
-    public RestorePoint(string relativePath, DateTime dateTime, SplitStorage storage, List<IBackupObject> backupObjects)
+    public RestorePoint(string relativePath, DateTime dateTime, IStorage storage, List<IBackupObject> backupObjects)
     {
         if (string.IsNullOrEmpty(relativePath))
         {
@@ -22,7 +22,7 @@ public class RestorePoint
     }
 
     public string RelativePath { get; }
-    public SplitStorage Storage { get; }
+    public IStorage Storage { get; }
     public DateTime CreationDate { get; }
     public IReadOnlyCollection<IBackupObject> BackupObjects() => _backupObjects;
 }

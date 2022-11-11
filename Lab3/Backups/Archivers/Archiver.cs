@@ -14,13 +14,15 @@ public class Archiver : IArchiver
         return Archive(new List<IComponent>() { component }, repository, zipPath);
     }
 
-    public ZipStorage Archive(List<IComponent> components, IRepository repository, string zipPath) // zipPath = Archive.zip or temp.zip
+    public ZipStorage Archive(List<IComponent> components, IRepository repository, string zipPath) // /../zipPath = Archive.zip or /../temp.zip
     {
-        using Stream stream = repository.OpenStream(zipPath); // using
+        using Stream stream = repository.OpenStream(zipPath);
         using var archive = new ZipArchive(stream, ZipArchiveMode.Update);
         var visitor = new ArchiveVisitor(archive);
 
         components.ForEach(x => x.Accept(visitor));
-        return new ZipStorage(zipPath, repository, new ZipFolder(zipPath, visitor.GetZipObjects().ToList()));
+        string zipName = Path.GetFileName(zipPath);
+        var zipFolder = new ZipFolder(zipName, visitor.GetZipObjects().ToList()); // zipName = Archive.zip
+        return new ZipStorage(zipPath, repository, zipFolder); // zipPath = /.../Archive.zip
     }
 }

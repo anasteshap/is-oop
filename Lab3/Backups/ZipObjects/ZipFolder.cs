@@ -24,6 +24,7 @@ public class ZipFolder : IZipObject
 
     public IComponent GetRepoComponent(ZipArchiveEntry entry)
     {
+        // return new FolderComponent(Path.GetFileNameWithoutExtension(Name), ); -> тут нужен фулл путь и репо...
         throw new NotImplementedException();
     }
 }
