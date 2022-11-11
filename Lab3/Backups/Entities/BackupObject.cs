@@ -14,13 +14,13 @@ public class BackupObject : IBackupObject
             throw NullException.InvalidName();
         }
 
-        RelativePath = fileName;
-        if (!repository.Exists(RelativePath))
+        if (!repository.Exists(fileName))
         {
-            throw RepositoryException.ObjectDoesNotExist(RelativePath);
+            throw RepositoryException.ObjectDoesNotExist(Path.Combine(repository.FullPath, fileName));
         }
 
         Repository = repository;
+        RelativePath = fileName;
     }
 
     public string RelativePath { get; }
