@@ -21,9 +21,9 @@ public class FileComponent : IComponent
 
     public string Name { get; }
 
-    public void Accept(IVisitor visitor)
+    public void Accept(IFileComponentVisitor fileComponentVisitor)
     {
-        visitor.CreateZipFile(this);
+        fileComponentVisitor.Visit(this);
     }
 
     public Stream OpenStream() => _streamCreator();

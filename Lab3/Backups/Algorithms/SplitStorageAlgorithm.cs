@@ -8,18 +8,15 @@ namespace Backups.Algorithms;
 
 public class SplitStorageAlgorithm : IAlgorithm
 {
-    public IStorage Save(IRepository repository, IArchiver archiver, List<IBackupObject> backupObjects, string fullPathOfRestorePoint)
+    public IStorage Save(IRepository repository, IArchiver archiver, IReadOnlyCollection<IBackupObject> backupObjects, string fullPathOfRestorePoint)
     {
         var storage = new SplitStorage();
 
         foreach (IBackupObject obj in backupObjects)
         {
             string zipPath = CreatePathForZip(fullPathOfRestorePoint, obj.RelativePath);
-
-            ZipStorage zipStorage = obj.Repository.FileExists(obj.RelativePath)
-                ? archiver.Archive(obj.GetRepoComponent(), repository, zipPath)
-                : archiver.Archive(obj.Repository.GetComponents(obj.RelativePath).ToList(), repository, zipPath);
-
+            ZipStorage zipStorage = archiver
+                .Archive(new List<IComponent>() { obj.Repository.GetRepositoryComponent(obj.RelativePath) }, repository, zipPath);
             storage.AddZipStorage(zipStorage);
         }
 

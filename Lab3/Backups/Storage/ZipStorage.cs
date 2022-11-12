@@ -8,7 +8,7 @@ namespace Backups.Storage;
 
 public class ZipStorage : IStorage
 {
-    public ZipStorage(string relativePath, IRepository repository, ZipFolder zipFolder) // тут ентри передавать?
+    public ZipStorage(string relativePath, IRepository repository, ZipFolder zipFolder)
     {
         if (string.IsNullOrEmpty(relativePath))
         {
@@ -24,23 +24,14 @@ public class ZipStorage : IStorage
     public IRepository Repository { get; }
     public ZipFolder ZipFolder { get; }
 
-    public int GetZipArchivesCount() => 1;
-
     public IReadOnlyCollection<IComponent> GetRepoComponents()
     {
-        var components = new List<IComponent>();
         using Stream stream = Repository.OpenStream(RelativePath);
+        var archive = new ZipArchive(stream, ZipArchiveMode.Read);
 
-        /*if (Equals(Path.GetFileName(RelativePath), "Archive.zip"))
-        {
-            using var archive = new ZipArchive(stream, ZipArchiveMode.Read);
-            var entries = archive.Entries.ToList();
-            entries.ForEach(x => components.Add(x.GetRepoComponent());
-
-            var zipFiles = ZipFolder.ZipFiles().ToList();
-            zipFiles.ForEach(x => components.Add(x.GetRepoComponent()));
-        }
-        zipFiles.ForEach(x => components.Add(x.GetRepoComponent())); // сюда ентри передаем*/
-        return components;
+        var zipFiles = ZipFolder.ZipFiles().ToList();
+        return archive.Entries
+            .Select(e => zipFiles.Single(x => x.Name.Equals(e.Name)).GetRepoComponent(e))
+            .ToList();
     }
 }

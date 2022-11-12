@@ -4,7 +4,7 @@ namespace Backups.Interfaces;
 
 public interface IBackup
 {
-    IReadOnlyCollection<RestorePoint> RestorePoints();
+    IReadOnlyCollection<RestorePoint> RestorePoints { get; }
     void AddRestorePoint(RestorePoint restorePoint);
     void DeleteRestorePoint(RestorePoint restorePoint);
 }

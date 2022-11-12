@@ -10,7 +10,7 @@ namespace Backups.Entities;
 public class BackupTask : IBackupTask
 {
     private readonly List<IBackupObject> _backupObjects = new ();
-
+    private readonly IBackup _backup = new Backup();
     public BackupTask(string name, IRepository repository, IAlgorithm algorithm, IArchiver archiver)
     {
         if (string.IsNullOrEmpty(name))
@@ -22,16 +22,15 @@ public class BackupTask : IBackupTask
         Repository = repository;
         Algorithm = algorithm;
         Archiver = archiver;
-        Backup = new Backup();
         Repository.CreateDirectory($"{repository.FullPath}/{name}");
     }
 
     public string Name { get; }
     public IRepository Repository { get; }
     public IAlgorithm Algorithm { get; }
-    public IBackup Backup { get; }
     public IArchiver Archiver { get; }
     public IReadOnlyCollection<IBackupObject> BackupObjects() => _backupObjects;
+    public IReadOnlyCollection<RestorePoint> RestorePoints() => _backup.RestorePoints;
 
     public void AddBackupObject(IBackupObject backupObject)
     {
@@ -54,7 +53,7 @@ public class BackupTask : IBackupTask
     public RestorePoint Working()
     {
         DateTime dateTime = DateTime.Now;
-        string data = $"{dateTime.Day}.{dateTime.Month}.{dateTime.Year}";
+        string data = $"{dateTime:dd.MM.yyyy}";
         string restorePointPath = $"{Name}/{data} {dateTime.Hour}h.{dateTime.Minute}m.{dateTime.Second}s.{dateTime.Millisecond}ms/";
         Repository.CreateDirectory(restorePointPath);
 
@@ -62,7 +61,7 @@ public class BackupTask : IBackupTask
             Algorithm.Save(Repository, Archiver, _backupObjects, $"{Repository.FullPath}/{restorePointPath}");
 
         var restorePoint = new RestorePoint(restorePointPath, dateTime, storage, _backupObjects);
-        Backup.AddRestorePoint(restorePoint);
+        _backup.AddRestorePoint(restorePoint);
         return restorePoint;
     }
 }

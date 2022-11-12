@@ -18,7 +18,7 @@ public class Archiver : IArchiver
     {
         using Stream stream = repository.OpenStream(zipPath);
         using var archive = new ZipArchive(stream, ZipArchiveMode.Update);
-        var visitor = new ArchiveVisitor(archive);
+        var visitor = new ArchiveFileComponentVisitor(archive);
 
         components.ForEach(x => x.Accept(visitor));
         string zipName = Path.GetFileName(zipPath);

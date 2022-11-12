@@ -20,11 +20,15 @@ public class BackupTests
         backupTask1.AddBackupObject(backupObject1);
         backupTask1.AddBackupObject(backupObject2);
         RestorePoint rp11 = backupTask1.Working();
-        Assert.True(rp11.Storage.GetZipArchivesCount() == 2);
+        bool bool1 = rep.Exists(Path.Combine(rp11.RelativePath, "temp.zip"));
+        bool bool2 = rep.Exists(Path.Combine(rp11.RelativePath, "copy.xlsx.zip"));
+        Assert.True(bool1);
+        Assert.True(bool2);
 
         backupTask1.RemoveBackupObject(backupObject1);
         RestorePoint rp12 = backupTask1.Working();
-        Assert.True(rp12.Storage.GetZipArchivesCount() == 1);
+        bool bool3 = rep.Exists(Path.Combine(rp12.RelativePath, "copy.xlsx.zip"));
+        Assert.False(bool3);
 
         var backupTask2 = new BackupTask("Task2", rep, new SingleStorageAlgorithm(), new Archiver());
         backupTask2.AddBackupObject(backupObject1);
@@ -50,14 +54,12 @@ public class BackupTests
         backupTask1.AddBackupObject(backupObject2);
         RestorePoint rp11 = backupTask1.Working();
         Assert.True(rep.DirectoryExists($"{rp11.RelativePath}"));
-        Assert.True(rp11.Storage.GetZipArchivesCount() == 2);
 
         backupTask1.RemoveBackupObject(backupObject1);
         RestorePoint rp12 = backupTask1.Working();
         Assert.True(rep.DirectoryExists($"{rp12.RelativePath}"));
-        Assert.True(rp12.Storage.GetZipArchivesCount() == 1);
 
-        Assert.True(backupTask1.Backup.RestorePoints().Count == 2);
+        Assert.True(backupTask1.RestorePoints().Count == 2);
 
         var backupTask2 = new BackupTask("Task2", rep, new SingleStorageAlgorithm(), new Archiver());
         backupTask2.AddBackupObject(backupObject1);

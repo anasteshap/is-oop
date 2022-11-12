@@ -10,9 +10,9 @@ public interface IBackupTask
     string Name { get; }
     IRepository Repository { get; }
     IAlgorithm Algorithm { get; }
-    IBackup Backup { get; }
     IArchiver Archiver { get; }
     IReadOnlyCollection<IBackupObject> BackupObjects();
+    IReadOnlyCollection<RestorePoint> RestorePoints();
     void AddBackupObject(IBackupObject backupObject);
     void RemoveBackupObject(IBackupObject backupObject);
     RestorePoint Working();

@@ -7,7 +7,7 @@ namespace Backups.Algorithms;
 
 public class SingleStorageAlgorithm : IAlgorithm
 {
-    public IStorage Save(IRepository repository, IArchiver archiver, List<IBackupObject> backupObjects, string fullPathOfRestorePoint)
+    public IStorage Save(IRepository repository, IArchiver archiver, IReadOnlyCollection<IBackupObject> backupObjects, string fullPathOfRestorePoint)
     {
         string zipPath = CreatePathForZip(fullPathOfRestorePoint);
         var repoComponents = backupObjects

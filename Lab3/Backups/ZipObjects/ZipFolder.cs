@@ -24,7 +24,15 @@ public class ZipFolder : IZipObject
 
     public IComponent GetRepoComponent(ZipArchiveEntry entry)
     {
-        // return new FolderComponent(Path.GetFileNameWithoutExtension(Name), ); -> тут нужен фулл путь и репо...
-        throw new NotImplementedException();
+        IReadOnlyCollection<IComponent> Factory()
+        {
+            var archive = new ZipArchive(entry.Open(), ZipArchiveMode.Read);
+
+            return archive.Entries
+                .Select(e => _zipFiles.Single(x => x.Name.Equals(e.Name)).GetRepoComponent(e))
+                .ToArray();
+        }
+
+        return new FolderComponent(Path.GetFileNameWithoutExtension(Name), Factory);
     }
 }

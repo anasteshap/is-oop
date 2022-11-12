@@ -7,5 +7,5 @@ namespace Backups.Component;
 public interface IComponent
 {
     string Name { get; }
-    void Accept(IVisitor visitor);
+    void Accept(IFileComponentVisitor fileComponentVisitor);
 }

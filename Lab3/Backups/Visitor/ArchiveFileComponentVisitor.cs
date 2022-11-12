@@ -6,12 +6,12 @@ using ZipFile = Backups.ZipObjects.ZipFile;
 
 namespace Backups.Visitor;
 
-public class ArchiveVisitor : IVisitor
+public class ArchiveFileComponentVisitor : IFileComponentVisitor
 {
     private readonly Stack<ZipArchive> _archives = new ();
     private readonly Stack<List<IZipObject>> _listsOfZipFiles = new ();
 
-    public ArchiveVisitor(ZipArchive zipArchive)
+    public ArchiveFileComponentVisitor(ZipArchive zipArchive)
     {
         if (zipArchive is null)
         {
@@ -32,7 +32,7 @@ public class ArchiveVisitor : IVisitor
         return _listsOfZipFiles.Peek();
     }
 
-    public void CreateZipFile(FileComponent fileComponent)
+    public void Visit(FileComponent fileComponent)
     {
         using Stream streamFrom = fileComponent.OpenStream();
         ZipArchive archive = _archives.Peek();
@@ -43,7 +43,7 @@ public class ArchiveVisitor : IVisitor
         _listsOfZipFiles.Peek().Add(zipFile);
     }
 
-    public void CreateZipFile(FolderComponent folderComponent)
+    public void Visit(FolderComponent folderComponent)
     {
         using Stream zipToOpen = _archives.Peek().CreateEntry($"{folderComponent.Name}.zip", CompressionLevel.Optimal).Open();
         using var archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update);

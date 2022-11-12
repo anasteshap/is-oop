@@ -9,7 +9,6 @@ public class SplitStorage : IStorage
     private readonly List<ZipStorage> _storages = new ();
 
     public IReadOnlyCollection<ZipStorage> Storages => _storages;
-    public int GetZipArchivesCount() => _storages.Count;
 
     public IReadOnlyCollection<IComponent> GetRepoComponents()
         => _storages.SelectMany(x => x.GetRepoComponents()).ToList();
