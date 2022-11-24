@@ -8,20 +8,27 @@ public class DepositAccount : BaseAccount
 {
     private readonly Percent _depositPercent;
     private readonly Limit _limitForDubiousClient;
-    internal DepositAccount(IClient client, decimal amount, BankConfiguration bankConfiguration1)
+    private readonly uint _depositPeriodInDays;
+    internal DepositAccount(IClient client, decimal amount, BankConfiguration bankConfiguration)
         : base(client, amount)
     {
-        _depositPercent = bankConfiguration1.DepositPercent;
-        _limitForDubiousClient = bankConfiguration1.LimitForDubiousClient;
-    }
-
-    public override void IncreaseAmount(decimal sum)
-    {
-        throw new NotImplementedException();
+        _depositPercent = bankConfiguration.DepositPercent;
+        _limitForDubiousClient = bankConfiguration.LimitForDubiousClient;
+        _depositPeriodInDays = bankConfiguration.DepositPeriodInDays;
     }
 
     public override void DecreaseAmount(decimal sum)
     {
-        throw new NotImplementedException();
+        if (sum <= 0)
+        {
+            throw new Exception();
+        }
+
+        if (Amount < sum)
+        {
+            throw new Exception();
+        }
+
+        Amount -= sum;
     }
 }

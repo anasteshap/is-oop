@@ -1,4 +1,5 @@
 using Banks.Accounts;
+using Banks.Accounts.Commands;
 using Banks.Builders;
 using Banks.Entities;
 using Banks.Interfaces;
@@ -20,14 +21,14 @@ public class CentralBank : ICentralBank
         throw new NotImplementedException();
     }
 
-    public Bank RegisterBank(string name, double debitPercent, double depositPercent, double creditCommission, decimal creditLimit, decimal limitForDubiousClient)
+    public Bank RegisterBank(string name, double debitPercent, double depositPercent, double creditCommission, decimal creditLimit, decimal limitForDubiousClient, uint depositPeriodInDays)
     {
         if (_banks.Exists(x => x.Name.Equals(name)))
         {
             throw new Exception();
         }
 
-        var bank = new Bank(name, debitPercent, depositPercent, creditCommission, creditLimit, limitForDubiousClient);
+        var bank = new Bank(name, debitPercent, depositPercent, creditCommission, creditLimit, limitForDubiousClient, depositPeriodInDays);
         _banks.Add(bank);
         return bank;
     }
@@ -37,10 +38,32 @@ public class CentralBank : ICentralBank
         return bank.CreateAccount(typeOfBankAccount, client, amount);
     }
 
-    public BankTransaction ReplenishAccount(Guid bankId, Guid accountId, decimal amount)
+    public BaseTransaction ReplenishAccount(Guid bankId, Guid accountId, decimal amount)
     {
         Bank bank = _banks.SingleOrDefault(x => x.Id.Equals(bankId)) ?? throw new Exception();
         return bank.Income(accountId, amount);
+    }
+
+    public BaseTransaction WithdrawMoney(Guid bankId, Guid accountId, decimal amount)
+    {
+        Bank bank = _banks.SingleOrDefault(x => x.Id.Equals(bankId)) ?? throw new Exception();
+        return bank.Withdraw(accountId, amount);
+    }
+
+    public BaseTransaction TransferMoney(Guid bankId1, Guid accountId1, Guid bankId2, Guid accountId2, decimal amount)
+    {
+        Bank bank1 = _banks.SingleOrDefault(x => x.Id.Equals(bankId1)) ?? throw new Exception();
+        Bank bank2 = _banks.SingleOrDefault(x => x.Id.Equals(bankId2)) ?? throw new Exception();
+        BaseAccount fromAccount = bank1.GetAccount(accountId1);
+        BaseAccount toAccount = bank1.GetAccount(accountId2);
+
+        var transactionFrom = new ChainTransaction(DateTime.Now, new Withdraw(fromAccount, amount));
+        var transactionTo = new ChainTransaction(DateTime.Now, new Income(toAccount, amount));
+        transactionFrom.SetNext(transactionTo);
+
+        transactionFrom.DoTransaction();
+        transactionTo.DoTransaction();
+        return transactionTo;
     }
 
     public void CancelTransaction(Guid bankId, Guid accountId, Guid transactionId)

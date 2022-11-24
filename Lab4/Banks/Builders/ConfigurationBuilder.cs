@@ -10,6 +10,7 @@ public class ConfigurationBuilder
     private Commission? _creditCommission;
     private Limit? _creditLimit;
     private Limit? _limitForDubiousClient;
+    private uint? _depositPeriodInDays;
 
     public ConfigurationBuilder()
     {
@@ -18,6 +19,7 @@ public class ConfigurationBuilder
         _creditCommission = null;
         _creditLimit = null;
         _limitForDubiousClient = null;
+        _depositPeriodInDays = null;
     }
 
     public ConfigurationBuilder AddDebitPercent(Percent debitPercent)
@@ -50,6 +52,12 @@ public class ConfigurationBuilder
         return this;
     }
 
+    public ConfigurationBuilder AddDepositPeriodInDays(uint depositPeriodInDays)
+    {
+        _depositPeriodInDays = depositPeriodInDays;
+        return this;
+    }
+
     public BankConfiguration Build()
     {
         return new BankConfiguration(
@@ -57,6 +65,7 @@ public class ConfigurationBuilder
             _depositPercent ?? throw new ArgumentNullException(),
             _creditCommission ?? throw new ArgumentNullException(),
             _creditLimit ?? throw new ArgumentNullException(),
-            _limitForDubiousClient ?? throw new ArgumentNullException());
+            _limitForDubiousClient ?? throw new ArgumentNullException(),
+            _depositPeriodInDays ?? throw new ArgumentNullException());
     }
 }

@@ -16,16 +16,6 @@ public class DebitAccount : BaseAccount
         _limitForDubiousClient = bankConfiguration.LimitForDubiousClient;
     }
 
-    public override void IncreaseAmount(decimal sum)
-    {
-        if (sum <= 0)
-        {
-            throw new Exception();
-        }
-
-        Amount += sum;
-    }
-
     public override void DecreaseAmount(decimal sum)
     {
         if (sum <= 0)
@@ -36,14 +26,6 @@ public class DebitAccount : BaseAccount
         if (Amount < sum)
         {
             throw new Exception();
-        }
-
-        if (Client.IsDubious())
-        {
-            if (sum < _limitForDubiousClient.Value)
-            {
-                throw new Exception();
-            }
         }
 
         Amount -= sum;

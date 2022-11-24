@@ -2,21 +2,25 @@ using Banks.Transaction;
 
 namespace Banks.Accounts.Commands;
 
-public class Income : ICommand
+public class Income : ITransactionCommand
 {
+    private readonly BaseAccount _account;
     private readonly decimal _sum;
-    public Income(decimal sum)
+    public Income(BaseAccount account, decimal sum)
     {
+        _account = account;
         _sum = sum < 0 ? throw new Exception() : sum;
     }
 
-    public void Execute(BaseAccount account)
+    public Guid Id { get; } = Guid.NewGuid();
+
+    public void Execute()
     {
-        account.IncreaseAmount(_sum);
+        _account.IncreaseAmount(_sum);
     }
 
-    public void Cancel(BaseAccount account)
+    public void Cancel()
     {
-        account.IncreaseAmount(_sum);
+        _account.IncreaseAmount(_sum);
     }
 }

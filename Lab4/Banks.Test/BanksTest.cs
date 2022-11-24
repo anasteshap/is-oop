@@ -19,7 +19,7 @@ public class BanksTest
         Assert.Throws<ArgumentNullException>(() => client.Address);*/
         var cb = new CentralBank();
         IClient client = cb.RegisterClient("1", "2");
-        Bank bank = cb.RegisterBank("VTB", 3, 3, 3, 100000, 3000);
+        Bank bank = cb.RegisterBank("VTB", 3, 3, 3, 100000, 3000, 365);
         BaseAccount creditAccount = cb.CreateBankAccount(bank, client, 100, TypeOfBankAccount.Credit);
         BaseAccount debitAccount = cb.CreateBankAccount(bank, client, 100, TypeOfBankAccount.Debit);
         BaseAccount depositAccount = cb.CreateBankAccount(bank, client, 100, TypeOfBankAccount.Deposit);

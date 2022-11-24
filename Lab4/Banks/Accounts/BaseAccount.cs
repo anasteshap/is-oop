@@ -6,7 +6,7 @@ namespace Banks.Accounts;
 
 public abstract class BaseAccount
 {
-    private readonly List<BankTransaction> _transactions = new ();
+    private readonly List<BaseTransaction> _transactions = new ();
     protected BaseAccount(IClient client, decimal amount)
     {
         if (amount < 0)
@@ -23,19 +23,28 @@ public abstract class BaseAccount
     public IClient Client { get; }
     public decimal Amount { get; protected set; }
 
-    public BankTransaction GetTransaction(Guid transactionId)
+    public BaseTransaction GetTransaction(Guid transactionId)
         => _transactions.FirstOrDefault(x => x.Id.Equals(transactionId)) ?? throw new Exception();
 
-    public abstract void IncreaseAmount(decimal sum);
-    public abstract void DecreaseAmount(decimal sum);
-
-    public void SaveChanges(BankTransaction bankTransaction)
+    public void IncreaseAmount(decimal sum)
     {
-        if (_transactions.Contains(bankTransaction))
+        if (sum <= 0)
         {
             throw new Exception();
         }
 
-        _transactions.Add(bankTransaction);
+        Amount += sum;
     }
+
+    public abstract void DecreaseAmount(decimal sum);
+
+    /*public void SaveChanges(ITransactionCommand transactionCommand)
+    {
+        if (_transactions.Contains(transactionCommand))
+        {
+            throw new Exception();
+        }
+
+        _transactions.Add(transactionCommand);
+    }*/
 }

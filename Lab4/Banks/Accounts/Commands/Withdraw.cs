@@ -2,21 +2,25 @@ using Banks.Interfaces;
 
 namespace Banks.Accounts.Commands;
 
-public class Withdraw : ICommand
+public class Withdraw : ITransactionCommand
 {
+    private readonly BaseAccount _account;
     private readonly decimal _sum;
-    public Withdraw(decimal sum)
+    public Withdraw(BaseAccount account, decimal sum)
     {
+        _account = account;
         _sum = sum < 0 ? throw new Exception() : sum;
     }
 
-    public void Execute(BaseAccount account)
+    public Guid Id { get; } = Guid.NewGuid();
+
+    public void Execute()
     {
-        account.DecreaseAmount(_sum);
+        _account.DecreaseAmount(_sum);
     }
 
-    public void Cancel(BaseAccount account)
+    public void Cancel()
     {
-        account.IncreaseAmount(_sum);
+        _account.IncreaseAmount(_sum);
     }
 }
