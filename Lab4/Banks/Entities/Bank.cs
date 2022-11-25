@@ -18,7 +18,7 @@ public class Bank : IObservable
     private readonly List<IObserver> _subscribers = new ();
     private readonly BankConfiguration _bankConfiguration;
 
-    public Bank(string name, double debitPercent, double depositPercent, double creditCommission, decimal creditLimit, decimal limitForDubiousClient, uint depositPeriodInDays)
+    public Bank(string name, double debitPercent, Dictionary<Range, Percent> depositPercents, double creditCommission, decimal creditLimit, decimal limitForDubiousClient, uint depositPeriodInDays)
     {
         ArgumentNullException.ThrowIfNull(nameof(name));
         Name = name;
@@ -28,7 +28,7 @@ public class Bank : IObservable
             .AddCommission(new Commission(creditCommission))
             .AddCreditLimit(new Limit(creditLimit))
             .AddDebitPercent(new Percent(debitPercent))
-            .AddDepositPercent(new Percent(depositPercent))
+            .AddDepositPercent(depositPercents)
             .AddLimitForDubiousClient(new Limit(limitForDubiousClient))
             .AddDepositPeriodInDays(depositPeriodInDays)
             .Build();

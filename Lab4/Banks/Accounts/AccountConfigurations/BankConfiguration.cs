@@ -6,14 +6,14 @@ public class BankConfiguration
 {
     internal BankConfiguration(
         Percent debitPercent,
-        Percent depositPercent,
+        Dictionary<Range, Percent> depositPercents,
         Commission creditCommission,
         Limit creditLimit,
         Limit limitForDubiousClient,
         uint depositPeriodInDays)
     {
         DebitPercent = debitPercent;
-        DepositPercent = depositPercent;
+        DepositPercents = depositPercents;
         CreditCommission = creditCommission;
         CreditLimit = creditLimit;
         LimitForDubiousClient = limitForDubiousClient;
@@ -21,7 +21,7 @@ public class BankConfiguration
     }
 
     public Percent DebitPercent { get; }
-    public Percent DepositPercent { get; }
+    public Dictionary<Range, Percent> DepositPercents { get; }
     public Commission CreditCommission { get; }
     public Limit CreditLimit { get; }
     public Limit LimitForDubiousClient { get; }

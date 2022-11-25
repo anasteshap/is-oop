@@ -6,13 +6,13 @@ namespace Banks.Accounts;
 
 public class DepositAccount : BaseAccount
 {
-    private readonly Percent _depositPercent;
+    private readonly Dictionary<Range, Percent> _depositPercents;
     private readonly Limit _limitForDubiousClient;
     private readonly uint _depositPeriodInDays;
     internal DepositAccount(IClient client, decimal amount, BankConfiguration bankConfiguration)
         : base(client, amount)
     {
-        _depositPercent = bankConfiguration.DepositPercent;
+        _depositPercents = bankConfiguration.DepositPercents;
         _limitForDubiousClient = bankConfiguration.LimitForDubiousClient;
         _depositPeriodInDays = bankConfiguration.DepositPeriodInDays;
     }

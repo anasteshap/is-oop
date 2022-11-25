@@ -3,6 +3,7 @@ using Banks.Accounts.Commands;
 using Banks.Builders;
 using Banks.Entities;
 using Banks.Interfaces;
+using Banks.Models;
 using Banks.Transaction;
 
 namespace Banks.Service;
@@ -21,14 +22,14 @@ public class CentralBank : ICentralBank
         throw new NotImplementedException();
     }
 
-    public Bank RegisterBank(string name, double debitPercent, double depositPercent, double creditCommission, decimal creditLimit, decimal limitForDubiousClient, uint depositPeriodInDays)
+    public Bank RegisterBank(string name, double debitPercent, Dictionary<Range, Percent> depositPercents, double creditCommission, decimal creditLimit, decimal limitForDubiousClient, uint depositPeriodInDays)
     {
         if (_banks.Exists(x => x.Name.Equals(name)))
         {
             throw new Exception();
         }
 
-        var bank = new Bank(name, debitPercent, depositPercent, creditCommission, creditLimit, limitForDubiousClient, depositPeriodInDays);
+        var bank = new Bank(name, debitPercent, depositPercents, creditCommission, creditLimit, limitForDubiousClient, depositPeriodInDays);
         _banks.Add(bank);
         return bank;
     }
@@ -55,7 +56,7 @@ public class CentralBank : ICentralBank
         Bank bank1 = _banks.SingleOrDefault(x => x.Id.Equals(bankId1)) ?? throw new Exception();
         Bank bank2 = _banks.SingleOrDefault(x => x.Id.Equals(bankId2)) ?? throw new Exception();
         BaseAccount fromAccount = bank1.GetAccount(accountId1);
-        BaseAccount toAccount = bank1.GetAccount(accountId2);
+        BaseAccount toAccount = bank2.GetAccount(accountId2);
 
         var transactionFrom = new ChainTransaction(DateTime.Now, new Withdraw(fromAccount, amount));
         var transactionTo = new ChainTransaction(DateTime.Now, new Income(toAccount, amount));
