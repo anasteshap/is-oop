@@ -10,7 +10,7 @@ public interface ICentralBank
     // IClient RegisterClient(string name, string surname, string? address = null, long? passport = null);
     // IClient RegisterClient(IClient client);
     Bank RegisterBank(string name, double debitPercent, Dictionary<Range, Percent> depositPercents, double creditCommission, decimal creditLimit, decimal limitForDubiousClient, uint depositPeriodInDays);
-    BaseAccount CreateBankAccount(Bank bank, IClient client, decimal amount, TypeOfBankAccount typeOfBankAccount);
+    BaseAccount CreateBankAccount(Bank bank, IClient client, decimal amount, TypeOfBankAccount typeOfBankAccount, uint? depositPeriodInDays = null);
     BaseTransaction ReplenishAccount(Guid bankId, Guid accountId, decimal amount);
     BaseTransaction WithdrawMoney(Guid bankId, Guid accountId, decimal amount);
     BaseTransaction TransferMoney(Guid bankId1, Guid accountId1, Guid bankId2, Guid accountId2, decimal amount);

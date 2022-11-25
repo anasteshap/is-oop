@@ -38,13 +38,13 @@ public abstract class BaseAccount
 
     public abstract void DecreaseAmount(decimal sum);
 
-    /*public void SaveChanges(ITransactionCommand transactionCommand)
+    public void SaveChanges(BaseTransaction transaction)
     {
-        if (_transactions.Contains(transactionCommand))
+        if (_transactions.Contains(transaction))
         {
             throw new Exception();
         }
 
-        _transactions.Add(transactionCommand);
-    }*/
+        _transactions.Add(transaction);
+    }
 }

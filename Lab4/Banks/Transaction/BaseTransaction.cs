@@ -7,33 +7,60 @@ public abstract class BaseTransaction
 {
     private readonly ITransactionCommand _transactionCommand;
 
-    protected BaseTransaction(DateTime transactionTime, ITransactionCommand transactionCommand)
+    protected BaseTransaction(ITransactionCommand transactionCommand)
     {
-        TransactionInformation = new TransactionInformation(transactionTime, State.Started);
         _transactionCommand = transactionCommand ?? throw new ArgumentNullException();
+        TransactionState = State.Started;
+        StatusMessage = $"Transaction {TransactionState.ToString()}";
     }
 
     public Guid Id { get; } = Guid.NewGuid();
-    public TransactionInformation TransactionInformation { get; }
+    public State TransactionState { get; private set; }
+    public string StatusMessage { get; private set; }
+
     public virtual void DoTransaction()
     {
-        if (TransactionInformation.State is not State.Started or State.Canceled)
+        if (TransactionState is not State.Started or State.Canceled)
         {
             throw new Exception();
         }
 
-        _transactionCommand.Execute();
-        TransactionInformation.State = State.Ended;
+        try
+        {
+            _transactionCommand.Execute();
+        }
+        catch (Exception e)
+        {
+            TransactionState = State.Failed;
+            StatusMessage = $"Transaction {TransactionState.ToString()}: {e.Message}";
+        }
+        finally
+        {
+            TransactionState = State.Ended;
+            StatusMessage = $"Transaction {TransactionState.ToString()}";
+        }
     }
 
     public virtual void Undo()
     {
-        if (TransactionInformation.State is not State.Ended or State.Canceled)
+        if (TransactionState is not State.Ended or State.Canceled)
         {
             throw new Exception();
         }
 
-        _transactionCommand.Cancel();
-        TransactionInformation.State = State.Canceled;
+        try
+        {
+            _transactionCommand.Cancel();
+        }
+        catch (Exception e)
+        {
+            TransactionState = State.Failed;
+            StatusMessage = $"Transaction {TransactionState.ToString()}: {e.Message}";
+        }
+        finally
+        {
+            TransactionState = State.Canceled;
+            StatusMessage = $"Transaction {TransactionState.ToString()}";
+        }
     }
 }

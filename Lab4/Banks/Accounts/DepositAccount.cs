@@ -9,12 +9,12 @@ public class DepositAccount : BaseAccount
     private readonly Dictionary<Range, Percent> _depositPercents;
     private readonly Limit _limitForDubiousClient;
     private readonly uint _depositPeriodInDays;
-    internal DepositAccount(IClient client, decimal amount, BankConfiguration bankConfiguration)
+    internal DepositAccount(IClient client, decimal amount, BankConfiguration bankConfiguration, uint? periodInDays = null)
         : base(client, amount)
     {
         _depositPercents = bankConfiguration.DepositPercents;
         _limitForDubiousClient = bankConfiguration.LimitForDubiousClient;
-        _depositPeriodInDays = bankConfiguration.DepositPeriodInDays;
+        _depositPeriodInDays = periodInDays ?? bankConfiguration.DepositPeriodInDays;
     }
 
     public override void DecreaseAmount(decimal sum)

@@ -66,13 +66,13 @@ public class Bank : IObservable
         _subscribers.ForEach(x => x.Update());
     }
 
-    internal BaseAccount CreateAccount(TypeOfBankAccount typeOfBankAccount, IClient client, decimal amount)
+    internal BaseAccount CreateAccount(TypeOfBankAccount typeOfBankAccount, IClient client, decimal amount, uint? depositPeriodInDays)
     {
         return typeOfBankAccount switch
         {
             TypeOfBankAccount.Credit => AccountFactory.CreateCreditAccount(client, amount, _bankConfiguration),
             TypeOfBankAccount.Debit => AccountFactory.CreateDebitAccount(client, amount, _bankConfiguration),
-            TypeOfBankAccount.Deposit => AccountFactory.CreateDepositAccount(client, amount, _bankConfiguration),
+            TypeOfBankAccount.Deposit=> AccountFactory.CreateDepositAccount(client, amount, _bankConfiguration, depositPeriodInDays),
             _ => throw new ArgumentOutOfRangeException(nameof(typeOfBankAccount), typeOfBankAccount, null)
         };
     }
@@ -80,24 +80,18 @@ public class Bank : IObservable
     internal BaseTransaction Income(Guid accountId, decimal sum)
     {
         BaseAccount account = _bankAccounts.FirstOrDefault(x => x.Id.Equals(accountId)) ?? throw new Exception();
-        var transaction = new BankTransaction(DateTime.Now, new Income(account, sum));
+        var transaction = new BankTransaction(new Income(account, sum));
         transaction.DoTransaction();
+        account.SaveChanges(transaction);
         return transaction;
     }
 
     internal BaseTransaction Withdraw(Guid accountId, decimal sum)
     {
         BaseAccount account = _bankAccounts.FirstOrDefault(x => x.Id.Equals(accountId)) ?? throw new Exception();
-        var transaction = new BankTransaction(DateTime.Now, new Withdraw(account, sum));
-        transaction.DoTransaction();
-        return transaction;
-    }
-
-    /*private BaseTransaction RunningCommand(ITransactionCommand transactionCommand, BaseAccount account)
-    {
-        var transaction = new BaseTransaction(DateTime.Now, transactionCommand);
+        var transaction = new BankTransaction(new Withdraw(account, sum));
         transaction.DoTransaction();
         account.SaveChanges(transaction);
         return transaction;
-    }*/
+    }
 }

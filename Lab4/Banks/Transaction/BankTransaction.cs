@@ -5,8 +5,8 @@ namespace Banks.Transaction;
 
 public class BankTransaction : BaseTransaction
 {
-    public BankTransaction(DateTime transactionTime, ITransactionCommand transactionCommand)
-        : base(transactionTime, transactionCommand)
+    public BankTransaction(ITransactionCommand transactionCommand)
+        : base(transactionCommand)
     {
     }
 }

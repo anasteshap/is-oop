@@ -34,9 +34,9 @@ public class CentralBank : ICentralBank
         return bank;
     }
 
-    public BaseAccount CreateBankAccount(Bank bank, IClient client, decimal amount, TypeOfBankAccount typeOfBankAccount)
+    public BaseAccount CreateBankAccount(Bank bank, IClient client, decimal amount, TypeOfBankAccount typeOfBankAccount, uint? depositPeriodInDays = null)
     {
-        return bank.CreateAccount(typeOfBankAccount, client, amount);
+        return bank.CreateAccount(typeOfBankAccount, client, amount, depositPeriodInDays);
     }
 
     public BaseTransaction ReplenishAccount(Guid bankId, Guid accountId, decimal amount)
@@ -58,12 +58,16 @@ public class CentralBank : ICentralBank
         BaseAccount fromAccount = bank1.GetAccount(accountId1);
         BaseAccount toAccount = bank2.GetAccount(accountId2);
 
-        var transactionFrom = new ChainTransaction(DateTime.Now, new Withdraw(fromAccount, amount));
-        var transactionTo = new ChainTransaction(DateTime.Now, new Income(toAccount, amount));
+        var transactionFrom = new ChainTransaction(new Withdraw(fromAccount, amount));
+        var transactionTo = new ChainTransaction(new Income(toAccount, amount));
         transactionFrom.SetNext(transactionTo);
 
         transactionFrom.DoTransaction();
+        fromAccount.SaveChanges(transactionFrom);
+
         transactionTo.DoTransaction();
+        toAccount.SaveChanges(transactionTo);
+
         return transactionTo;
     }
 

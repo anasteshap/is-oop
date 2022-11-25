@@ -15,8 +15,8 @@ internal class AccountFactory
         return new DebitAccount(client, amount, bankConfiguration);
     }
 
-    internal static BaseAccount CreateDepositAccount(IClient client, decimal amount, BankConfiguration bankConfiguration)
+    internal static BaseAccount CreateDepositAccount(IClient client, decimal amount, BankConfiguration bankConfiguration, uint? periodInDays)
     {
-        return new DepositAccount(client, amount, bankConfiguration);
+        return new DepositAccount(client, amount, bankConfiguration, periodInDays);
     }
 }
