@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Banks.Accounts.AccountConfigurations;
 using Banks.Interfaces;
 using Banks.Models;

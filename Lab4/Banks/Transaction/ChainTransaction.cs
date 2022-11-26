@@ -2,16 +2,16 @@ using Banks.Accounts.Commands;
 
 namespace Banks.Transaction;
 
-public class ChainTransaction : BaseTransaction
+public class ChainTransaction : BankTransaction
 {
-    public ChainTransaction(ITransactionCommand transactionCommand)
-        : base(transactionCommand)
+    public ChainTransaction(ICommand command)
+        : base(command)
     {
     }
 
-    public BaseTransaction? Previous { get; internal set; } = null;
-    public BaseTransaction? Next { get; private set; } = null;
-    public BaseTransaction SetNext(ChainTransaction nextTransaction)
+    public BankTransaction? Previous { get; internal set; } = null;
+    public BankTransaction? Next { get; private set; } = null;
+    public BankTransaction SetNext(ChainTransaction nextTransaction)
     {
         nextTransaction.Previous = this;
         Next = nextTransaction;

@@ -66,7 +66,7 @@ public class Bank : IObservable
         _subscribers.ForEach(x => x.Update());
     }
 
-    internal BaseAccount CreateAccount(TypeOfBankAccount typeOfBankAccount, IClient client, decimal amount, uint? depositPeriodInDays)
+    internal BaseAccount CreateAccount(TypeOfBankAccount typeOfBankAccount, IClient client, decimal amount, uint? depositPeriodInDays = null)
     {
         return typeOfBankAccount switch
         {
@@ -77,19 +77,19 @@ public class Bank : IObservable
         };
     }
 
-    internal BaseTransaction Income(Guid accountId, decimal sum)
+    internal BankTransaction Income(Guid accountId, decimal sum)
     {
         BaseAccount account = _bankAccounts.FirstOrDefault(x => x.Id.Equals(accountId)) ?? throw new Exception();
-        var transaction = new BankTransaction(new Income(account, sum));
+        var transaction = new BaseTransaction(new Income(account, sum));
         transaction.DoTransaction();
         account.SaveChanges(transaction);
         return transaction;
     }
 
-    internal BaseTransaction Withdraw(Guid accountId, decimal sum)
+    internal BankTransaction Withdraw(Guid accountId, decimal sum)
     {
         BaseAccount account = _bankAccounts.FirstOrDefault(x => x.Id.Equals(accountId)) ?? throw new Exception();
-        var transaction = new BankTransaction(new Withdraw(account, sum));
+        var transaction = new BaseTransaction(new Withdraw(account, sum));
         transaction.DoTransaction();
         account.SaveChanges(transaction);
         return transaction;

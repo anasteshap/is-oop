@@ -25,5 +25,6 @@ public class BanksTest
         BaseAccount creditAccount = cb.CreateBankAccount(bank, client, 100, TypeOfBankAccount.Credit);
         BaseAccount debitAccount = cb.CreateBankAccount(bank, client, 100, TypeOfBankAccount.Debit);
         BaseAccount depositAccount = cb.CreateBankAccount(bank, client, 100, TypeOfBankAccount.Deposit, 91);
+        BaseAccount creditAccount1 = cb.CreateCreditAccount(bank, client);
     }
 }

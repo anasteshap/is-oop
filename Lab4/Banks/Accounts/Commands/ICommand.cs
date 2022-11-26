@@ -1,8 +1,7 @@
 namespace Banks.Accounts.Commands;
 
-public interface ITransactionCommand
+public interface ICommand
 {
-    Guid Id { get; }
     void Execute();
     void Cancel();
 }

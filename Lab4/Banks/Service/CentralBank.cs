@@ -11,6 +11,7 @@ namespace Banks.Service;
 public class CentralBank : ICentralBank
 {
     private readonly List<Bank> _banks = new ();
+    private readonly List<BankTransaction> _transactions = new ();
 
     public IClient RegisterClient(string name, string surname, string? address = null, long? passport = null)
     {
@@ -34,24 +35,41 @@ public class CentralBank : ICentralBank
         return bank;
     }
 
+    // или так (1 метод)
     public BaseAccount CreateBankAccount(Bank bank, IClient client, decimal amount, TypeOfBankAccount typeOfBankAccount, uint? depositPeriodInDays = null)
     {
         return bank.CreateAccount(typeOfBankAccount, client, amount, depositPeriodInDays);
     }
 
-    public BaseTransaction ReplenishAccount(Guid bankId, Guid accountId, decimal amount)
+    // или так (3 метода)
+    public BaseAccount CreateCreditAccount(Bank bank, IClient client)
+    {
+        return bank.CreateAccount(TypeOfBankAccount.Credit, client, 0); // разобраться с суммой
+    }
+
+    public BaseAccount CreateDebitAccount(Bank bank, IClient client)
+    {
+        return bank.CreateAccount(TypeOfBankAccount.Debit, client, 0); // разобраться с суммой
+    }
+
+    public BaseAccount CreateDepositAccount(Bank bank, IClient client, uint? depositPeriodInDays = null)
+    {
+        return bank.CreateAccount(TypeOfBankAccount.Deposit, client, 0, depositPeriodInDays); // разобраться с суммой
+    }
+
+    public BankTransaction ReplenishAccount(Guid bankId, Guid accountId, decimal amount)
     {
         Bank bank = _banks.SingleOrDefault(x => x.Id.Equals(bankId)) ?? throw new Exception();
         return bank.Income(accountId, amount);
     }
 
-    public BaseTransaction WithdrawMoney(Guid bankId, Guid accountId, decimal amount)
+    public BankTransaction WithdrawMoney(Guid bankId, Guid accountId, decimal amount)
     {
         Bank bank = _banks.SingleOrDefault(x => x.Id.Equals(bankId)) ?? throw new Exception();
         return bank.Withdraw(accountId, amount);
     }
 
-    public BaseTransaction TransferMoney(Guid bankId1, Guid accountId1, Guid bankId2, Guid accountId2, decimal amount)
+    public BankTransaction TransferMoney(Guid bankId1, Guid accountId1, Guid bankId2, Guid accountId2, decimal amount)
     {
         Bank bank1 = _banks.SingleOrDefault(x => x.Id.Equals(bankId1)) ?? throw new Exception();
         Bank bank2 = _banks.SingleOrDefault(x => x.Id.Equals(bankId2)) ?? throw new Exception();
