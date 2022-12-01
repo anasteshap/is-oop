@@ -20,11 +20,5 @@ public class BanksTest
             { new Range(50000, 100000), new Percent(3.5) },
             { Range.StartAt(100000), new Percent(4) },
         };
-
-        Bank bank = cb.RegisterBank("VTB", 3, depositPercents, 3, 100000, 3000, 365);
-        BaseAccount creditAccount = cb.CreateBankAccount(bank, client, 100, TypeOfBankAccount.Credit);
-        BaseAccount debitAccount = cb.CreateBankAccount(bank, client, 100, TypeOfBankAccount.Debit);
-        BaseAccount depositAccount = cb.CreateBankAccount(bank, client, 100, TypeOfBankAccount.Deposit, 91);
-        BaseAccount creditAccount1 = cb.CreateCreditAccount(bank, client);
     }
 }

@@ -2,7 +2,7 @@ using Banks.Transaction;
 
 namespace Banks.Accounts.Commands;
 
-public class Income : ICommand
+public class Income : IBalanceOperationCommand
 {
     private readonly BaseAccount _account;
     private readonly decimal _sum;
@@ -20,6 +20,6 @@ public class Income : ICommand
 
     public void Cancel()
     {
-        _account.IncreaseAmount(_sum);
+        _account.DecreaseAmount(_sum);
     }
 }

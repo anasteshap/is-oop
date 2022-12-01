@@ -2,7 +2,7 @@ using Banks.Interfaces;
 
 namespace Banks.Accounts.Commands;
 
-public class Withdraw : ICommand
+public class Withdraw : IBalanceOperationCommand
 {
     private readonly BaseAccount _account;
     private readonly decimal _sum;

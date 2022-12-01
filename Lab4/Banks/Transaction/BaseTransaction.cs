@@ -5,7 +5,7 @@ namespace Banks.Transaction;
 
 public class BaseTransaction : BankTransaction
 {
-    public BaseTransaction(ICommand command)
+    public BaseTransaction(IBalanceOperationCommand command)
         : base(command)
     {
     }

@@ -9,8 +9,8 @@ public class CreditAccount : BaseAccount
     private readonly Commission _creditCommission;
     private readonly Limit _creditLimit;
     private readonly Limit _limitForDubiousClient;
-    internal CreditAccount(IClient client, decimal amount, BankConfiguration bankConfiguration)
-        : base(client, amount)
+    internal CreditAccount(IClient client, BankConfiguration bankConfiguration)
+        : base(client, TypeOfBankAccount.Credit)
     {
         _creditCommission = bankConfiguration.CreditCommission;
         _creditLimit = bankConfiguration.CreditLimit;

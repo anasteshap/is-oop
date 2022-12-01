@@ -4,7 +4,7 @@ namespace Banks.Transaction;
 
 public class ChainTransaction : BankTransaction
 {
-    public ChainTransaction(ICommand command)
+    public ChainTransaction(IBalanceOperationCommand command)
         : base(command)
     {
     }
@@ -27,6 +27,6 @@ public class ChainTransaction : BankTransaction
     public override void Undo()
     {
         base.Undo();
-        Previous?.Undo();
+        Next?.Undo();
     }
 }

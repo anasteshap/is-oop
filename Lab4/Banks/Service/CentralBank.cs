@@ -1,4 +1,5 @@
 using Banks.Accounts;
+using Banks.Accounts.AccountConfigurations;
 using Banks.Accounts.Commands;
 using Banks.Builders;
 using Banks.Entities;
@@ -11,50 +12,83 @@ namespace Banks.Service;
 public class CentralBank : ICentralBank
 {
     private readonly List<Bank> _banks = new ();
-    private readonly List<BankTransaction> _transactions = new ();
+    private readonly List<Client> _clients = new ();
 
     public IClient RegisterClient(string name, string surname, string? address = null, long? passport = null)
     {
-        return new ClientBuilder().AddName(name).AddSurname(surname).AddAddress(address).AddPassportNumber(passport).Build();
+        Client client = new ClientBuilder().AddName(name).AddSurname(surname).AddAddress(address)
+            .AddPassportNumber(passport).Build();
+        _clients.Add(client);
+        return client;
     }
 
-    public IClient RegisterClient(IClient client)
+    public void AddClientInfo(IClient client, string? address = null, long passport = default)
     {
-        throw new NotImplementedException();
+        if (!_clients.Contains(client))
+        {
+            throw new Exception($"Клиента с именем {client.Surname} {client.Name} нет");
+        }
+
+        if (address is not null)
+        {
+            client.SetAddress(address);
+        }
+
+        if (passport != default)
+        {
+            client.SetPassportNumber(passport);
+        }
     }
 
-    public Bank RegisterBank(string name, double debitPercent, Dictionary<Range, Percent> depositPercents, double creditCommission, decimal creditLimit, decimal limitForDubiousClient, uint depositPeriodInDays)
+    public Bank? FindBankByName(string name) => _banks.FirstOrDefault(x => x.Name == name);
+
+    public Bank GetBankByName(string name) => FindBankByName(name) ?? throw new Exception($"Банка с именем {name} нет");
+
+    public BaseAccount? FindAccountById(string bankName, Guid accountId)
+    {
+        Bank bank = GetBankByName(bankName);
+        return bank.FindAccount(accountId);
+    }
+
+    public IReadOnlyCollection<Bank> GetAllBanks() => _banks;
+
+    public BankConfiguration CreateConfiguration(double debitPercent, Dictionary<Range, Percent> depositPercents, double creditCommission, decimal creditLimit, decimal limitForDubiousClient, uint depositPeriodInDays)
+    {
+        return new ConfigurationBuilder()
+            .AddCommission(new Commission(creditCommission))
+            .AddCreditLimit(new Limit(creditLimit))
+            .AddDebitPercent(new Percent(debitPercent))
+            .AddDepositPercent(depositPercents)
+            .AddLimitForDubiousClient(new Limit(limitForDubiousClient))
+            .AddDepositPeriodInDays(depositPeriodInDays)
+            .Build();
+    }
+
+    public Bank CreateBank(string name, BankConfiguration bankConfiguration)
     {
         if (_banks.Exists(x => x.Name.Equals(name)))
         {
             throw new Exception();
         }
 
-        var bank = new Bank(name, debitPercent, depositPercents, creditCommission, creditLimit, limitForDubiousClient, depositPeriodInDays);
+        var bank = new Bank(name, bankConfiguration);
         _banks.Add(bank);
         return bank;
     }
 
-    // или так (1 метод)
-    public BaseAccount CreateBankAccount(Bank bank, IClient client, decimal amount, TypeOfBankAccount typeOfBankAccount, uint? depositPeriodInDays = null)
-    {
-        return bank.CreateAccount(typeOfBankAccount, client, amount, depositPeriodInDays);
-    }
-
-    // или так (3 метода)
     public BaseAccount CreateCreditAccount(Bank bank, IClient client)
     {
-        return bank.CreateAccount(TypeOfBankAccount.Credit, client, 0); // разобраться с суммой
+        return bank.CreateAccount(TypeOfBankAccount.Credit, client);
     }
 
     public BaseAccount CreateDebitAccount(Bank bank, IClient client)
     {
-        return bank.CreateAccount(TypeOfBankAccount.Debit, client, 0); // разобраться с суммой
+        return bank.CreateAccount(TypeOfBankAccount.Debit, client);
     }
 
     public BaseAccount CreateDepositAccount(Bank bank, IClient client, uint? depositPeriodInDays = null)
     {
-        return bank.CreateAccount(TypeOfBankAccount.Deposit, client, 0, depositPeriodInDays); // разобраться с суммой
+        return bank.CreateAccount(TypeOfBankAccount.Deposit, client, depositPeriodInDays);
     }
 
     public BankTransaction ReplenishAccount(Guid bankId, Guid accountId, decimal amount)
@@ -86,7 +120,7 @@ public class CentralBank : ICentralBank
         transactionTo.DoTransaction();
         toAccount.SaveChanges(transactionTo);
 
-        return transactionTo;
+        return transactionFrom;
     }
 
     public void CancelTransaction(Guid bankId, Guid accountId, Guid transactionId)

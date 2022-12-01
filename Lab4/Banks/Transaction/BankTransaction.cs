@@ -5,9 +5,9 @@ namespace Banks.Transaction;
 
 public abstract class BankTransaction
 {
-    private readonly ICommand _command;
+    private readonly IBalanceOperationCommand _command;
 
-    protected BankTransaction(ICommand command)
+    protected BankTransaction(IBalanceOperationCommand command)
     {
         _command = command ?? throw new ArgumentNullException();
         TransactionState = State.Started;

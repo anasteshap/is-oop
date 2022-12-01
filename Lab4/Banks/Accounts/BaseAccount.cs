@@ -7,18 +7,14 @@ namespace Banks.Accounts;
 public abstract class BaseAccount
 {
     private readonly List<BankTransaction> _transactions = new ();
-    protected BaseAccount(IClient client, decimal amount)
+    protected BaseAccount(IClient client, TypeOfBankAccount type)
     {
-        if (amount < 0)
-        {
-            throw new Exception();
-        }
-
+        Type = type;
         Id = Guid.NewGuid();
         Client = client ?? throw new ArgumentNullException();
-        Amount = amount;
     }
 
+    public TypeOfBankAccount Type { get; }
     public Guid Id { get; }
     public IClient Client { get; }
     public decimal Amount { get; protected set; }

@@ -2,9 +2,7 @@ using Banks.Accounts;
 using Banks.Accounts.AccountConfigurations;
 using Banks.Accounts.Commands;
 using Banks.Accounts.Factory;
-using Banks.Builders;
 using Banks.Interfaces;
-using Banks.Models;
 using Banks.Observer;
 using Banks.Service;
 using Banks.Transaction;
@@ -13,32 +11,25 @@ namespace Banks.Entities;
 
 public class Bank : IObservable
 {
-    private readonly CentralBank _centralBank = new CentralBank();
+    private readonly ICentralBank _centralBank = new CentralBank();
     private readonly List<BaseAccount> _bankAccounts = new ();
     private readonly List<IObserver> _subscribers = new ();
     private readonly BankConfiguration _bankConfiguration;
 
-    public Bank(string name, double debitPercent, Dictionary<Range, Percent> depositPercents, double creditCommission, decimal creditLimit, decimal limitForDubiousClient, uint depositPeriodInDays)
+    public Bank(string name, BankConfiguration bankConfiguration)
     {
         ArgumentNullException.ThrowIfNull(nameof(name));
-        Name = name;
-        Id = Guid.NewGuid();
+        ArgumentNullException.ThrowIfNull(nameof(bankConfiguration));
 
-        _bankConfiguration = new ConfigurationBuilder()
-            .AddCommission(new Commission(creditCommission))
-            .AddCreditLimit(new Limit(creditLimit))
-            .AddDebitPercent(new Percent(debitPercent))
-            .AddDepositPercent(depositPercents)
-            .AddLimitForDubiousClient(new Limit(limitForDubiousClient))
-            .AddDepositPeriodInDays(depositPeriodInDays)
-            .Build();
+        Name = name;
+        _bankConfiguration = bankConfiguration;
+        Id = Guid.NewGuid();
     }
 
     public Guid Id { get; }
     public string Name { get; }
-
+    public IReadOnlyCollection<BaseAccount> GetAccounts => _bankAccounts;
     public BaseAccount? FindAccount(Guid accountId) => _bankAccounts.SingleOrDefault(x => x.Id.Equals(accountId));
-
     public BaseAccount GetAccount(Guid accountId) => FindAccount(accountId) ?? throw new Exception();
 
     public void Subscribe(IObserver observer)
@@ -66,15 +57,28 @@ public class Bank : IObservable
         _subscribers.ForEach(x => x.Update());
     }
 
-    internal BaseAccount CreateAccount(TypeOfBankAccount typeOfBankAccount, IClient client, decimal amount, uint? depositPeriodInDays = null)
+    internal BaseAccount CreateAccount(TypeOfBankAccount typeOfBankAccount, IClient client, uint? depositPeriodInDays = null)
     {
-        return typeOfBankAccount switch
+        BaseAccount account;
+        switch (typeOfBankAccount)
         {
-            TypeOfBankAccount.Credit => AccountFactory.CreateCreditAccount(client, amount, _bankConfiguration),
-            TypeOfBankAccount.Debit => AccountFactory.CreateDebitAccount(client, amount, _bankConfiguration),
-            TypeOfBankAccount.Deposit=> AccountFactory.CreateDepositAccount(client, amount, _bankConfiguration, depositPeriodInDays),
-            _ => throw new ArgumentOutOfRangeException(nameof(typeOfBankAccount), typeOfBankAccount, null)
-        };
+            case TypeOfBankAccount.Credit:
+                account = AccountFactory.CreateCreditAccount(client, _bankConfiguration);
+                _bankAccounts.Add(account);
+                break;
+            case TypeOfBankAccount.Debit:
+                account = AccountFactory.CreateDebitAccount(client, _bankConfiguration);
+                _bankAccounts.Add(account);
+                break;
+            case TypeOfBankAccount.Deposit:
+                account = AccountFactory.CreateDepositAccount(client, _bankConfiguration, depositPeriodInDays);
+                _bankAccounts.Add(account);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(typeOfBankAccount), typeOfBankAccount, null);
+        }
+
+        return account;
     }
 
     internal BankTransaction Income(Guid accountId, decimal sum)

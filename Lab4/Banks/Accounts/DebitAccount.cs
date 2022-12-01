@@ -8,12 +8,14 @@ public class DebitAccount : BaseAccount
 {
     private readonly Percent _debitPercent;
     private readonly Limit _limitForDubiousClient;
-    private readonly decimal _percentageAmount = 0;
-    internal DebitAccount(IClient client, decimal amount, BankConfiguration bankConfiguration)
-        : base(client, amount)
+    private readonly decimal _percentageAmount;
+    internal DebitAccount(IClient client, BankConfiguration bankConfiguration)
+        : base(client, TypeOfBankAccount.Debit)
     {
         _debitPercent = bankConfiguration.DebitPercent;
         _limitForDubiousClient = bankConfiguration.LimitForDubiousClient;
+        _percentageAmount = 10000;
+        _percentageAmount++;
     }
 
     public override void DecreaseAmount(decimal sum)
