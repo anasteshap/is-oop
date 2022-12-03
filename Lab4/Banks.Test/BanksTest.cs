@@ -4,6 +4,7 @@ using Banks.Accounts.AccountConfigurations;
 using Banks.DateTimeProvider;
 using Banks.Entities;
 using Banks.Interfaces;
+using Banks.Models;
 using Banks.Service;
 using Banks.Transaction;
 using Xunit;
@@ -15,7 +16,7 @@ public class BanksTest
     public void TransactionTest()
     {
         var cb = new CentralBank(new RewindClock());
-        Bank bank = cb.CreateBank("tink", 3, new List<DepositPercent>() { }, 100, 2000, 3000, TimeSpan.FromDays(90));
+        Bank bank = cb.CreateBank("tink", 3, new List<DepositPercent>() { new DepositPercent(new Percent(3), 0) }, 100, 2000, 3000, TimeSpan.FromDays(90));
         IClient client = cb.RegisterClient("Anastasiia", "Pinchuk");
         BaseAccount account1 = bank.CreateAccount(TypeOfBankAccount.Debit, client);
 
