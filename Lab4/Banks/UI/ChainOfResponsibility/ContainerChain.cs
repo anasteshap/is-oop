@@ -1,43 +1,35 @@
+using System.Collections;
+
 namespace Banks.UI.ChainOfResponsibility;
 
-public class ContainerChain : IChain
+public class ContainerChain : ChainBase
 {
-    private readonly List<IChain> _chains = new ();
-    private readonly string _str;
+    private IChain? _headSubChain;
     public ContainerChain(string str)
+        : base(str)
     {
-        ArgumentNullException.ThrowIfNull(nameof(str));
-        _str = str;
     }
 
-    public ContainerChain AddSubChain(IChain subChain)
+    public IChain AddSubChain(IChain subChain)
     {
-        if (_chains.Contains(subChain))
+        if (_headSubChain is null)
+            _headSubChain = subChain;
+        else
+            _headSubChain.AddNext(subChain);
+        return subChain;
+    }
+
+    public override void Process(IEnumerator enumerator)
+    {
+        if (!IsThis(enumerator.Current))
         {
-            throw new Exception();
+            Next?.Process(enumerator);
         }
-
-        _chains.Add(subChain);
-
-        // subChain.AddNext(this);
-        return this;
-    }
-
-    public bool IsThis(string str) => _str.Equals(str);
-
-    public void Process(List<string> strings)
-    {
-        if (strings.Count == 0 || !_str.Equals(strings[0]))
+        else
         {
-            throw new Exception();
+            if (!enumerator.MoveNext())
+                throw new Exception();
+            _headSubChain?.Process(enumerator);
         }
-
-        IChain subChain = _chains.FirstOrDefault(x => x.IsThis(strings[1])) ?? throw new Exception("Try again");
-        subChain.Process(strings.GetRange(1, strings.Count - 1));
-    }
-
-    public IChain AddNext(IChain nextChain)
-    {
-        throw new NotImplementedException();
     }
 }

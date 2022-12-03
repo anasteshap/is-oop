@@ -1,3 +1,4 @@
+using Banks.Accounts.AccountConfigurations;
 using Banks.Entities;
 using Banks.Interfaces;
 using Banks.Models;
@@ -7,39 +8,41 @@ namespace Banks.UI.Controllers;
 
 public class BankController
 {
-    private readonly ICentralBank _centralBank;
-    public BankController(ICentralBank centralBank)
+    private readonly DataController _data;
+    public BankController(DataController data)
     {
-        _centralBank = centralBank;
+        _data = data;
     }
 
     public void Create()
     {
         string bankName = AnsiConsole.Ask<string>("Enter a [green]bank name[/] - ");
-        double debitPercent = AnsiConsole.Ask("Enter a [green]bank debitYearPercent[/] - ", 3d);
-        double bankBelow50000Percent = AnsiConsole.Ask("Enter a [green]bank bankBelow50000Percent[/] - ", 3d);
-        double bankBetween50000And100000Percent = AnsiConsole.Ask("Enter a [green]bank bankBetween50000And100000Percent[/] - ", 4d);
-        double bankAbove100000Percent = AnsiConsole.Ask("Enter a [green]bank bankAbove100000Percent[/] - ", 5d);
-        double creditCommission = AnsiConsole.Ask("Enter a [green]creditCommission[/] - ", 4d);
+        decimal debitPercent = AnsiConsole.Ask("Enter a [green]bank debitYearPercent[/] - ", 3);
+        var depositPercents = new List<DepositPercent>() { };
+        Console.WriteLine("Enter a bank depositPercents\n");
+        while (true)
+        {
+            decimal percent = AnsiConsole.Ask<decimal>("Enter a [green]bank depositPercent[/] - ");
+            decimal leftBorder = AnsiConsole.Ask<decimal>("Enter a [green]leftBorder for depositPercent[/] - ");
+            decimal rightBorder =
+                AnsiConsole.Ask("Enter a [green]rightBorder for depositPercent[/] - ", decimal.Zero);
+            if (rightBorder == decimal.Zero)
+                break;
+            depositPercents.Add(new DepositPercent(new Percent(percent), leftBorder, rightBorder));
+        }
 
-        // DateTime bankDepositUnlockDate = AnsiConsole.Ask<DateTime>("Enter a [green]depositUnlockDate[/] - ");
+        decimal creditCommission = AnsiConsole.Ask("Enter a [green]creditCommission[/] - ", 200m);
+        int countOfDays = AnsiConsole.Ask("Enter a [green]countOfDays[/] - ", 90);
         decimal creditLimit = AnsiConsole.Ask("Enter a [green]creditLimit[/] - ", 5000m);
         decimal limitForDubiousClient = AnsiConsole.Ask("Enter a [green]limitForDubiousClient[/] - ", 3000m);
-        uint depositPeriodInDays = AnsiConsole.Ask<uint>("Enter a [green]depositPeriodInDays[/] - ", 91);
 
-        var depositPercents = new Dictionary<Range, Percent>()
-        {
-            { new Range(0, 50000), new Percent(bankBelow50000Percent) },
-            { new Range(50000, 100000), new Percent(bankBetween50000And100000Percent) },
-            { Range.StartAt(100000), new Percent(bankAbove100000Percent) },
-        };
-        _centralBank.CreateBank(bankName, _centralBank.CreateConfiguration(debitPercent, depositPercents, creditCommission, creditLimit, limitForDubiousClient, depositPeriodInDays));
+        _data.CentralBank.CreateBank(bankName, debitPercent, depositPercents, creditCommission, creditLimit, limitForDubiousClient, new TimeSpan(countOfDays, 0, 0, 0));
         SuccessfulState();
     }
 
     public void ShowAll()
     {
-        var banks = _centralBank.GetAllBanks().ToList();
+        var banks = _data.CentralBank.GetAllBanks().ToList();
         if (banks.Count == 0)
         {
             Console.ForegroundColor = ConsoleColor.Red;
@@ -55,7 +58,7 @@ public class BankController
     public void ChangeConfig()
     {
         string bankName = AnsiConsole.Ask<string>("[green]Bank name[/] - ");
-        Bank? bank = _centralBank.FindBankByName(bankName);
+        Bank? bank = _data.CentralBank.FindBankByName(bankName);
         if (bank is null)
         {
             Console.ForegroundColor = ConsoleColor.Red;
@@ -64,19 +67,37 @@ public class BankController
             return;
         }
 
-        char ans;
-        ans = AnsiConsole.Ask<char>("Do you want [green]to change debitPercent[/]? (y/n) - ");
+        char ans = AnsiConsole.Ask<char>("Do you want [green]to change debitPercent[/]? (y/n) - ");
         if (ans == 'y')
-            _centralBank.ChangeDebitPercent(bank.Id, AnsiConsole.Ask<double>("New [green]debitPercent[/] - "));
+            bank.ChangeDebitPercent(AnsiConsole.Ask<decimal>("New [green]debitPercent[/] - "));
+        ans = AnsiConsole.Ask<char>("Do you want [green]to change depositPercents[/]? (y/n) - ");
+        if (ans == 'y')
+        {
+            var depositPercents = new List<DepositPercent>() { };
+            Console.WriteLine("New depositPercents\n");
+            while (true)
+            {
+                decimal percent = AnsiConsole.Ask<decimal>("Enter a [green]bank depositPercent[/] - ");
+                decimal leftBorder = AnsiConsole.Ask<decimal>("Enter a [green]leftBorder for depositPercent[/] - ");
+                decimal rightBorder =
+                    AnsiConsole.Ask("Enter a [green]rightBorder for depositPercent[/] - ", decimal.Zero);
+                if (rightBorder == decimal.Zero)
+                    break;
+                depositPercents.Add(new DepositPercent(new Percent(percent), leftBorder, rightBorder));
+            }
+
+            bank.ChangeDepositPercent(depositPercents);
+        }
+
         ans = AnsiConsole.Ask<char>("Do you want [green]to change creditCommission[/]? (y/n) - ");
         if (ans == 'y')
-            _centralBank.ChangeCreditCommission(bank.Id, AnsiConsole.Ask<double>("New [green]creditCommission[/] - "));
+            bank.ChangeCreditCommission(AnsiConsole.Ask<decimal>("New [green]creditCommission[/] - "));
         ans = AnsiConsole.Ask<char>("Do you want [green]to change creditLimit[/]? (y/n) - ");
         if (ans == 'y')
-            _centralBank.ChangeCreditLimit(bank.Id, AnsiConsole.Ask<decimal>("New [green]creditLimit[/] - "));
+            bank.ChangeCreditLimit(AnsiConsole.Ask<decimal>("New [green]creditLimit[/] - "));
         ans = AnsiConsole.Ask<char>("Do you want [green]to change limitForDubiousClient[/]? (y/n) - ");
         if (ans == 'y')
-            _centralBank.ChangeLimitForDubiousClient(bank.Id, AnsiConsole.Ask<decimal>("New [green]limitForDubiousClient[/] - "));
+            bank.ChangeLimitForDubiousClient(AnsiConsole.Ask<decimal>("New [green]limitForDubiousClient[/] - "));
     }
 
     private static void SuccessfulState()

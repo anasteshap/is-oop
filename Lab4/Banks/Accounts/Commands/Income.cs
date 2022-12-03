@@ -1,5 +1,3 @@
-using Banks.Transaction;
-
 namespace Banks.Accounts.Commands;
 
 public class Income : IBalanceOperationCommand

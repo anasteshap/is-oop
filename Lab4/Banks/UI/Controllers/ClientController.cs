@@ -5,10 +5,10 @@ namespace Banks.UI.Controllers;
 
 public class ClientController
 {
-    private readonly ICentralBank _centralBank;
-    public ClientController(ICentralBank centralBank)
+    private readonly DataController _data;
+    public ClientController(DataController data)
     {
-        _centralBank = centralBank;
+        _data = data;
     }
 
     public void Create()
@@ -17,14 +17,14 @@ public class ClientController
         string surName = AnsiConsole.Ask<string>("Enter a [green]surName[/] - ");
         string address = AnsiConsole.Ask("Enter an [green]address[/] - ", string.Empty);
         long passport = AnsiConsole.Ask<long>("Enter a [green]passportNumber[/] - ", default);
-        IClient client = _centralBank.RegisterClient(name, surName, address, passport);
-        DataObjectController.ChangeCurrentClient(client);
+        IClient client = _data.CentralBank.RegisterClient(name, surName, address, passport);
+        _data.ChangeCurrentClient(client);
         SuccessfulState();
     }
 
     public void AddCurrentClientInfo()
     {
-        if (DataObjectController.CurrentClient is null)
+        if (_data.CurrentClient is null)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("no registered client");
@@ -34,16 +34,18 @@ public class ClientController
 
         string address = AnsiConsole.Ask("Enter an [green]address[/] - ", string.Empty);
         long passport = default;
-        if (DataObjectController.CurrentClient.PassportNumber == default)
+        if (_data.CurrentClient.PassportNumber == default)
             passport = AnsiConsole.Ask<long>("Enter a [green]passportNumber[/] - ", default);
-        _centralBank.AddClientInfo(DataObjectController.CurrentClient, address, passport);
+        if (!string.IsNullOrEmpty(address))
+            _data.CurrentClient.SetAddress(address);
+        if (passport != default)
+            _data.CurrentClient.SetPassportNumber(passport);
         SuccessfulState();
     }
 
     public void ShowCurrentClientInfo()
     {
-        var currentClient = DataObjectController.CurrentClient;
-        if (currentClient is null)
+        if (_data.CurrentClient is null)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("no registered client");
@@ -51,12 +53,12 @@ public class ClientController
             return;
         }
 
-        Console.WriteLine($"\tName: {currentClient.Name}");
-        Console.WriteLine($"\tSurname: {currentClient.Surname}");
-        Console.WriteLine($"\tAddress: {currentClient.Address}");
-        Console.WriteLine(currentClient.PassportNumber == default
+        Console.WriteLine($"\tName: {_data.CurrentClient.Name}");
+        Console.WriteLine($"\tSurname: {_data.CurrentClient.Surname}");
+        Console.WriteLine($"\tAddress: {_data.CurrentClient.Address}");
+        Console.WriteLine(_data.CurrentClient.PassportNumber == default
             ? "\tPassportNumber: "
-            : $"\tPassportNumber: {currentClient.PassportNumber}");
+            : $"\tPassportNumber: {_data.CurrentClient.PassportNumber}");
         SuccessfulState();
     }
 

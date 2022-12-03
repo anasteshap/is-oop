@@ -2,6 +2,7 @@ using Banks.Accounts;
 using Banks.Accounts.AccountConfigurations;
 using Banks.Accounts.Commands;
 using Banks.Builders;
+using Banks.DateTimeProvider;
 using Banks.Entities;
 using Banks.Interfaces;
 using Banks.Models;
@@ -12,7 +13,14 @@ namespace Banks.Service;
 public class CentralBank : ICentralBank
 {
     private readonly List<Bank> _banks = new ();
-    private readonly List<Client> _clients = new ();
+    private readonly List<Client> _clients = new (); // убрать // FindClientByName
+
+    public CentralBank(RewindClock rewindClock)
+    {
+        RewindClock = rewindClock;
+    }
+
+    public RewindClock RewindClock { get; }
 
     public IClient RegisterClient(string name, string surname, string? address = null, long? passport = null)
     {
@@ -22,73 +30,24 @@ public class CentralBank : ICentralBank
         return client;
     }
 
-    public void AddClientInfo(IClient client, string? address = null, long passport = default)
-    {
-        if (!_clients.Contains(client))
-        {
-            throw new Exception($"Клиента с именем {client.Surname} {client.Name} нет");
-        }
-
-        if (address is not null)
-        {
-            client.SetAddress(address);
-        }
-
-        if (passport != default)
-        {
-            client.SetPassportNumber(passport);
-        }
-    }
-
     public Bank? FindBankByName(string name) => _banks.FirstOrDefault(x => x.Name == name);
 
     public Bank GetBankByName(string name) => FindBankByName(name) ?? throw new Exception($"Банка с именем {name} нет");
 
-    public BaseAccount? FindAccountById(string bankName, Guid accountId)
-    {
-        Bank bank = GetBankByName(bankName);
-        return bank.FindAccount(accountId);
-    }
-
     public IReadOnlyCollection<Bank> GetAllBanks() => _banks;
 
-    public BankConfiguration CreateConfiguration(double debitPercent, Dictionary<Range, Percent> depositPercents, double creditCommission, decimal creditLimit, decimal limitForDubiousClient, uint depositPeriodInDays)
-    {
-        return new ConfigurationBuilder()
-            .AddCommission(new Commission(creditCommission))
-            .AddCreditLimit(new Limit(creditLimit))
-            .AddDebitPercent(new Percent(debitPercent))
-            .AddDepositPercent(depositPercents)
-            .AddLimitForDubiousClient(new Limit(limitForDubiousClient))
-            .AddDepositPeriodInDays(depositPeriodInDays)
-            .Build();
-    }
-
-    public Bank CreateBank(string name, BankConfiguration bankConfiguration)
+    public void CreateBank(string name, decimal debitPercent, List<DepositPercent> depositPercents, decimal creditCommission, decimal creditLimit, decimal limitForDubiousClient, TimeSpan endOfPeriod)
     {
         if (_banks.Exists(x => x.Name.Equals(name)))
-        {
             throw new Exception();
-        }
 
-        var bank = new Bank(name, bankConfiguration);
+        var credit = new CreditAccountConfiguration(creditCommission, creditLimit);
+        var debit = new DebitAccountConfiguration(new Percent(debitPercent));
+        var deposit = new DepositAccountConfiguration(depositPercents, endOfPeriod);
+        var bankConfiguration = new BankConfiguration(credit, debit, deposit, new Limit(limitForDubiousClient));
+
+        var bank = new Bank(name, RewindClock, bankConfiguration);
         _banks.Add(bank);
-        return bank;
-    }
-
-    public BaseAccount CreateCreditAccount(Bank bank, IClient client)
-    {
-        return bank.CreateAccount(TypeOfBankAccount.Credit, client);
-    }
-
-    public BaseAccount CreateDebitAccount(Bank bank, IClient client)
-    {
-        return bank.CreateAccount(TypeOfBankAccount.Debit, client);
-    }
-
-    public BaseAccount CreateDepositAccount(Bank bank, IClient client, uint? depositPeriodInDays = null)
-    {
-        return bank.CreateAccount(TypeOfBankAccount.Deposit, client, depositPeriodInDays);
     }
 
     public BankTransaction ReplenishAccount(Guid bankId, Guid accountId, decimal amount)
@@ -110,47 +69,17 @@ public class CentralBank : ICentralBank
         BaseAccount fromAccount = bank1.GetAccount(accountId1);
         BaseAccount toAccount = bank2.GetAccount(accountId2);
 
-        var transactionFrom = new ChainTransaction(new Withdraw(fromAccount, amount));
-        var transactionTo = new ChainTransaction(new Income(toAccount, amount));
-        transactionFrom.SetNext(transactionTo);
+        var transaction = new BaseTransaction(new Transfer(toAccount, fromAccount, amount));
+        transaction.DoTransaction();
+        toAccount.SaveChanges(transaction);
+        fromAccount.SaveChanges(transaction);
 
-        transactionFrom.DoTransaction();
-        fromAccount.SaveChanges(transactionFrom);
-
-        transactionTo.DoTransaction();
-        toAccount.SaveChanges(transactionTo);
-
-        return transactionFrom;
+        return transaction;
     }
 
     public void CancelTransaction(Guid bankId, Guid accountId, Guid transactionId)
     {
         Bank bank = _banks.SingleOrDefault(x => x.Id.Equals(bankId)) ?? throw new Exception();
         bank.GetAccount(accountId).GetTransaction(transactionId).Undo();
-    }
-
-    public void ChangeDebitPercent(Guid bankId, double percent)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void ChangeDepositPercent(Guid bankId, double percent)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void ChangeCreditCommission(Guid bankId, double commissionPercent)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void ChangeCreditLimit(Guid bankId, decimal creditLimit)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void ChangeLimitForDubiousClient(Guid bankId, decimal limitForDubiousClient)
-    {
-        throw new NotImplementedException();
     }
 }

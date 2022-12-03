@@ -1,6 +1,6 @@
 namespace Banks.Observer;
 
-public interface IObserver
+public interface IObserver<T>
 {
-    void Update();
+    void Update(T data);
 }

@@ -1,3 +1,4 @@
+using Banks.Accounts;
 using Banks.Entities;
 using Banks.Interfaces;
 using Spectre.Console;
@@ -6,15 +7,15 @@ namespace Banks.UI.Controllers;
 
 public class AccountController
 {
-    private readonly ICentralBank _centralBank;
-    public AccountController(ICentralBank centralBank)
+    private readonly DataController _data;
+    public AccountController(DataController data)
     {
-        _centralBank = centralBank;
+        _data = data;
     }
 
     public void ShowAll()
     {
-        var banks = _centralBank.GetAllBanks();
+        var banks = _data.CentralBank.GetAllBanks();
         if (banks.Count == 0)
         {
             Console.WriteLine("no registered banks and accounts");
@@ -34,39 +35,38 @@ public class AccountController
             bank.GetAccounts.ToList().ForEach(x => Console.WriteLine(
                 $"Account Id: {x.Id}" +
                 $"\nClient Id: {x.Client.Id}" +
-                $"\nBalance: {x.Amount}" +
+                $"\nBalance: {x.Balance}" +
                 $"\nType: {x.Type}\n"));
-            Console.WriteLine('\n');
         }
     }
 
     public void CreateCredit()
     {
-        if (DataObjectController.CurrentClient is null)
+        if (_data.CurrentClient is null)
         {
             Console.WriteLine("no registered client, create client");
             return;
         }
 
-        _centralBank.CreateCreditAccount(GetBank(), DataObjectController.CurrentClient);
+        GetBank().CreateAccount(TypeOfBankAccount.Credit, _data.CurrentClient);
         SuccessfulState();
     }
 
     public void CreateDebit()
     {
-        if (DataObjectController.CurrentClient is null)
+        if (_data.CurrentClient is null)
         {
             Console.WriteLine("no registered client, create client");
             return;
         }
 
-        _centralBank.CreateDebitAccount(GetBank(), DataObjectController.CurrentClient);
+        GetBank().CreateAccount(TypeOfBankAccount.Debit, _data.CurrentClient);
         SuccessfulState();
     }
 
     public void CreateDeposit()
     {
-        if (DataObjectController.CurrentClient is null)
+        if (_data.CurrentClient is null)
         {
             Console.WriteLine("no registered client, create client");
             return;
@@ -74,13 +74,13 @@ public class AccountController
 
         Bank bank = GetBank();
         char ans = AnsiConsole.Ask<char>("Add a [green]depositPeriodsInDays[/]? (y/n) - ");
-        uint? depositPeriodsInDays = null;
+        TimeSpan? endOfPeriod = null;
         if (ans.Equals('y'))
         {
-            depositPeriodsInDays = AnsiConsole.Ask<uint>("Enter a [green]depositPeriodsInDays[/] - ");
+            endOfPeriod = AnsiConsole.Ask("Enter a [green]timeSpan[/] - ", TimeSpan.FromDays(90));
         }
 
-        _centralBank.CreateDepositAccount(bank, DataObjectController.CurrentClient, depositPeriodsInDays);
+        bank.CreateAccount(TypeOfBankAccount.Deposit, _data.CurrentClient, endOfPeriod);
         SuccessfulState();
     }
 
@@ -94,6 +94,6 @@ public class AccountController
     private Bank GetBank()
     {
         string bankName = AnsiConsole.Ask<string>("Enter a [green]bank name[/] - ");
-        return _centralBank.GetBankByName(bankName);
+        return _data.CentralBank.GetBankByName(bankName);
     }
 }

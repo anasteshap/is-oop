@@ -2,8 +2,8 @@ namespace Banks.Models;
 
 public class Percent
 {
-    private const double MinPercentValue = 0;
-    public Percent(double value)
+    private const decimal MinPercentValue = 0;
+    public Percent(decimal value)
     {
         if (value < MinPercentValue)
         {
@@ -13,5 +13,5 @@ public class Percent
         Value = value / 100;
     }
 
-    public double Value { get; }
+    public decimal Value { get; }
 }

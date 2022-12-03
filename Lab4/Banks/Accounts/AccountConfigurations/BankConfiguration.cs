@@ -4,26 +4,21 @@ namespace Banks.Accounts.AccountConfigurations;
 
 public class BankConfiguration
 {
-    internal BankConfiguration(
-        Percent debitPercent,
-        Dictionary<Range, Percent> depositPercents,
-        Commission creditCommission,
-        Limit creditLimit,
-        Limit limitForDubiousClient,
-        uint depositPeriodInDays)
+    public BankConfiguration(
+        CreditAccountConfiguration creditAccountConfiguration,
+        DebitAccountConfiguration debitAccountConfiguration,
+        DepositAccountConfiguration depositAccountConfiguration,
+        Limit limitForDubiousClient)
     {
-        DebitPercent = debitPercent;
-        DepositPercents = depositPercents;
-        CreditCommission = creditCommission;
-        CreditLimit = creditLimit;
-        LimitForDubiousClient = limitForDubiousClient;
-        DepositPeriodInDays = depositPeriodInDays;
+        CreditAccountConfiguration = creditAccountConfiguration ?? throw new ArgumentNullException();
+        DebitAccountConfiguration = debitAccountConfiguration ?? throw new ArgumentNullException();
+        DepositAccountConfiguration = depositAccountConfiguration ?? throw new ArgumentNullException();
+        LimitForDubiousClient = limitForDubiousClient ?? throw new ArgumentNullException();
     }
 
-    public Percent DebitPercent { get; }
-    public Dictionary<Range, Percent> DepositPercents { get; }
-    public Commission CreditCommission { get; }
-    public Limit CreditLimit { get; }
-    public Limit LimitForDubiousClient { get; }
-    public uint DepositPeriodInDays { get; }
+    public CreditAccountConfiguration CreditAccountConfiguration { get; }
+    public DebitAccountConfiguration DebitAccountConfiguration { get; }
+    public DepositAccountConfiguration DepositAccountConfiguration { get; }
+    public Limit LimitForDubiousClient { get; private set; }
+    public void SetLimitForDubiousClient(decimal limit) => LimitForDubiousClient = new Limit(limit);
 }

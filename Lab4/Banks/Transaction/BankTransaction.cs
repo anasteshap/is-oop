@@ -1,4 +1,3 @@
-using Banks.Accounts;
 using Banks.Accounts.Commands;
 
 namespace Banks.Transaction;
@@ -16,7 +15,7 @@ public abstract class BankTransaction
 
     public Guid Id { get; } = Guid.NewGuid();
     public State TransactionState { get; private set; }
-    public string StatusMessage { get; private set; }
+    public string StatusMessage { get; protected set; }
 
     public virtual void DoTransaction()
     {

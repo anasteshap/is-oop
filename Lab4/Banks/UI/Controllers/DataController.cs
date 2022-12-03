@@ -2,17 +2,17 @@ using Banks.Interfaces;
 
 namespace Banks.UI.Controllers;
 
-public class DataObjectController
+public class DataController
 {
-    public DataObjectController(ICentralBank centralBank)
+    public DataController(ICentralBank centralBank)
     {
         CentralBank = centralBank;
     }
 
-    public static IClient? CurrentClient { get; private set; }
+    public IClient? CurrentClient { get; private set; }
     public ICentralBank CentralBank { get; }
 
-    public static void ChangeCurrentClient(IClient client)
+    public void ChangeCurrentClient(IClient client)
     {
         ArgumentNullException.ThrowIfNull(nameof(client));
         CurrentClient = client;

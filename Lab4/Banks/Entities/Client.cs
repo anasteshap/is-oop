@@ -3,46 +3,46 @@ using Banks.Observer;
 
 namespace Banks.Entities;
 
-public class Client : IClient, IObserver
+public class Client : IClient
 {
+    private List<string> _updates = new (); // GetMessages() = _updates;
     internal Client(string name, string surname, string? address, long? passportNumber)
     {
         Name = name;
         Surname = surname;
-        Address = address ?? string.Empty;
-        PassportNumber = passportNumber ?? default;
+        Address? = address;
+        PassportNumber? = passportNumber;
     }
 
     public Guid Id { get; } = Guid.NewGuid();
     public string Name { get; }
     public string Surname { get; }
-    public string Address { get; private set; }
-    public long PassportNumber { get; private set; }
+    public string? Address { get; private set; }
+    public long? PassportNumber { get; private set; }
+    public bool IsDubious => string.IsNullOrEmpty(Address) || PassportNumber == default;
 
     public void SetAddress(string? address)
     {
         if (string.IsNullOrEmpty(address))
-        {
-            throw new Exception();
-        }
+            throw new Exception("Invalid address");
 
         Address = address;
     }
 
     public void SetPassportNumber(long passport)
     {
-        if (PassportNumber != default || passport == default)
-        {
-            throw new Exception();
-        }
+        if (PassportNumber != default)
+            throw new Exception("Passport is already exist");
+
+        if (passport == default)
+            throw new Exception("Invalid passport");
 
         PassportNumber = passport;
     }
 
-    public bool IsDubious() => string.IsNullOrEmpty(Address) || PassportNumber == default;
-
-    public void Update()
+    public void Update(string data)
     {
-        throw new NotImplementedException();
+        ArgumentNullException.ThrowIfNull(nameof(data));
+        _updates.Add(data);
     }
 }
