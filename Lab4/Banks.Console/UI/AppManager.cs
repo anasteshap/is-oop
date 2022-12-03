@@ -1,9 +1,9 @@
+using Banks.Console.UI.ChainOfResponsibility;
+using Banks.Console.UI.Controllers;
 using Banks.DateTimeProvider;
 using Banks.Service;
-using Banks.UI.ChainOfResponsibility;
-using Banks.UI.Controllers;
 
-namespace Banks.UI;
+namespace Banks.Console.UI;
 
 public class AppManager
 {
@@ -21,7 +21,7 @@ public class AppManager
         Menu();
         while (true)
         {
-            string? console = Console.ReadLine();
+            string? console = System.Console.ReadLine();
             if (console == "--menu")
             {
                 Menu();
@@ -37,39 +37,39 @@ public class AppManager
             }
             catch (Exception e)
             {
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine($"Try again\n{e.Message}");
-                Console.ResetColor();
-                Console.WriteLine("\nwrite for help\n\tapp --menu");
+                System.Console.ForegroundColor = ConsoleColor.Blue;
+                System.Console.WriteLine($"Try again\n{e.Message}");
+                System.Console.ResetColor();
+                System.Console.WriteLine("\nwrite for help\n\tapp --menu");
             }
         }
     }
 
     private static void Menu()
     {
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("\n---Commands---");
-        Console.ResetColor();
+        System.Console.ForegroundColor = ConsoleColor.Yellow;
+        System.Console.WriteLine("\n---Commands---");
+        System.Console.ResetColor();
 
-        Console.WriteLine("app bank create");
-        Console.WriteLine("app bank showAll");
-        Console.WriteLine("app bank changeConfig");
-        Console.WriteLine("app client create");
-        Console.WriteLine("app client current addInfo");
-        Console.WriteLine("app client current showInfo");
-        Console.WriteLine("app client current change");
-        Console.WriteLine("app client showAll");
-        Console.WriteLine("app account create credit");
-        Console.WriteLine("app account create debit");
-        Console.WriteLine("app account create deposit");
-        Console.WriteLine("app account addMoney");
-        Console.WriteLine("app account withdrawMoney");
-        Console.WriteLine("app account transferMoney");
-        Console.WriteLine("app account cancelTransaction");
-        Console.WriteLine("app account showAll");
-        Console.WriteLine("app account showAllTransactionsInAccount");
-        Console.WriteLine("app rewindTime");
-        Console.WriteLine("app dateNow");
+        System.Console.WriteLine("app bank create");
+        System.Console.WriteLine("app bank showAll");
+        System.Console.WriteLine("app bank changeConfig");
+        System.Console.WriteLine("app client create");
+        System.Console.WriteLine("app client current addInfo");
+        System.Console.WriteLine("app client current showInfo");
+        System.Console.WriteLine("app client current change");
+        System.Console.WriteLine("app client showAll");
+        System.Console.WriteLine("app account create credit");
+        System.Console.WriteLine("app account create debit");
+        System.Console.WriteLine("app account create deposit");
+        System.Console.WriteLine("app account addMoney");
+        System.Console.WriteLine("app account withdrawMoney");
+        System.Console.WriteLine("app account transferMoney");
+        System.Console.WriteLine("app account cancelTransaction");
+        System.Console.WriteLine("app account showAll");
+        System.Console.WriteLine("app account showAllTransactionsInAccount");
+        System.Console.WriteLine("app rewindTime");
+        System.Console.WriteLine("app dateNow");
     }
 
     private void Init()

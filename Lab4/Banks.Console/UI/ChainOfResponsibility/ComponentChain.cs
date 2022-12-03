@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace Banks.UI.ChainOfResponsibility;
+namespace Banks.Console.UI.ChainOfResponsibility;
 
 public class ComponentChain : ChainBase
 {

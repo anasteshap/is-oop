@@ -1,10 +1,9 @@
 using Banks.Accounts.AccountConfigurations;
 using Banks.Entities;
-using Banks.Interfaces;
 using Banks.Models;
 using Spectre.Console;
 
-namespace Banks.UI.Controllers;
+namespace Banks.Console.UI.Controllers;
 
 public class BankController
 {
@@ -19,7 +18,7 @@ public class BankController
         string bankName = AnsiConsole.Ask<string>("Enter a [green]bank name[/] - ");
         decimal debitPercent = AnsiConsole.Ask("Enter a [green]bank debitYearPercent[/] - ", 3);
         var depositPercents = new List<DepositPercent>() { };
-        Console.WriteLine("Enter a bank depositPercents\n");
+        System.Console.WriteLine("Enter a bank depositPercents\n");
         while (true)
         {
             decimal percent = AnsiConsole.Ask<decimal>("Enter a [green]bank depositPercent[/] - ");
@@ -45,14 +44,14 @@ public class BankController
         var banks = _data.CentralBank.GetAllBanks().ToList();
         if (banks.Count == 0)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("no registered bank");
-            Console.ResetColor();
+            System.Console.ForegroundColor = ConsoleColor.Red;
+            System.Console.WriteLine("no registered bank");
+            System.Console.ResetColor();
             return;
         }
 
-        banks.ForEach(x => Console.WriteLine($"\nName: {x.Name}\nId: {x.Id}"));
-        Console.WriteLine("\n");
+        banks.ForEach(x => System.Console.WriteLine($"\nName: {x.Name}\nId: {x.Id}"));
+        System.Console.WriteLine("\n");
     }
 
     public void ChangeConfig()
@@ -61,9 +60,9 @@ public class BankController
         Bank? bank = _data.CentralBank.FindBankByName(bankName);
         if (bank is null)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("no registered bank");
-            Console.ResetColor();
+            System.Console.ForegroundColor = ConsoleColor.Red;
+            System.Console.WriteLine("no registered bank");
+            System.Console.ResetColor();
             return;
         }
 
@@ -74,7 +73,7 @@ public class BankController
         if (ans == 'y')
         {
             var depositPercents = new List<DepositPercent>() { };
-            Console.WriteLine("New depositPercents\n");
+            System.Console.WriteLine("New depositPercents\n");
             while (true)
             {
                 decimal percent = AnsiConsole.Ask<decimal>("Enter a [green]bank depositPercent[/] - ");
@@ -102,8 +101,8 @@ public class BankController
 
     private static void SuccessfulState()
     {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine(">> Success");
-        Console.ResetColor();
+        System.Console.ForegroundColor = ConsoleColor.Green;
+        System.Console.WriteLine(">> Success");
+        System.Console.ResetColor();
     }
 }

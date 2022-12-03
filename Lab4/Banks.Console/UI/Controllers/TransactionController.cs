@@ -1,9 +1,8 @@
 using Banks.Entities;
-using Banks.Interfaces;
 using Banks.Transaction;
 using Spectre.Console;
 
-namespace Banks.UI.Controllers;
+namespace Banks.Console.UI.Controllers;
 
 public class TransactionController
 {
@@ -22,7 +21,7 @@ public class TransactionController
         bank.GetAccount(accountId);
         decimal sum = AnsiConsole.Ask<decimal>("Enter a [green]sum to add[/] - ");
         BankTransaction transaction = _data.CentralBank.ReplenishAccount(bank.Id, accountId, sum);
-        Console.WriteLine(transaction.StatusMessage);
+        System.Console.WriteLine(transaction.StatusMessage);
         SuccessfulState();
     }
 
@@ -34,7 +33,7 @@ public class TransactionController
         bank.GetAccount(accountId);
         decimal sum = AnsiConsole.Ask<decimal>("Enter a [green]sum to withdraw[/] - ");
         BankTransaction transaction = _data.CentralBank.WithdrawMoney(bank.Id, accountId, sum);
-        Console.WriteLine(transaction.StatusMessage);
+        System.Console.WriteLine(transaction.StatusMessage);
         SuccessfulState();
     }
 
@@ -51,7 +50,7 @@ public class TransactionController
         toBank.GetAccount(toAccountId);
         decimal sum = AnsiConsole.Ask<decimal>("Enter a [green]sum to transfer[/] - ");
         BankTransaction transaction = _data.CentralBank.TransferMoney(fromBank.Id, fromAccountId, toBank.Id, toAccountId, sum);
-        Console.WriteLine(transaction.StatusMessage);
+        System.Console.WriteLine(transaction.StatusMessage);
         SuccessfulState();
     }
 
@@ -68,7 +67,7 @@ public class TransactionController
             .GetAccount(accountId)
             .GetAllTransaction
             .Single(x => x.Id.ToString().Equals(transactionId.ToString()));
-        Console.WriteLine(transaction.StatusMessage);
+        System.Console.WriteLine(transaction.StatusMessage);
         SuccessfulState();
     }
 
@@ -80,15 +79,15 @@ public class TransactionController
         bank.GetAccount(accountId);
 
         var transactions = bank.GetAccount(accountId).GetAllTransaction.ToList();
-        Console.WriteLine($"\n>> Bank name: {bank.Name}\n>> BankId: {bank.Id}\n\n>> AccountId: {accountId}\n");
-        transactions.ForEach(x => Console.WriteLine($"IdTransaction: {x.Id}"));
+        System.Console.WriteLine($"\n>> Bank name: {bank.Name}\n>> BankId: {bank.Id}\n\n>> AccountId: {accountId}\n");
+        transactions.ForEach(x => System.Console.WriteLine($"IdTransaction: {x.Id}"));
         SuccessfulState();
     }
 
     private static void SuccessfulState()
     {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine(">> Success");
-        Console.ResetColor();
+        System.Console.ForegroundColor = ConsoleColor.Green;
+        System.Console.WriteLine(">> Success");
+        System.Console.ResetColor();
     }
 }

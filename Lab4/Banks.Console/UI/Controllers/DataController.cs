@@ -1,6 +1,6 @@
 using Banks.Interfaces;
 
-namespace Banks.UI.Controllers;
+namespace Banks.Console.UI.Controllers;
 
 public class DataController
 {

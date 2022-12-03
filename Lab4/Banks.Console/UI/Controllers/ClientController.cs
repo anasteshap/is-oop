@@ -1,7 +1,7 @@
 using Banks.Interfaces;
 using Spectre.Console;
 
-namespace Banks.UI.Controllers;
+namespace Banks.Console.UI.Controllers;
 
 public class ClientController
 {
@@ -26,9 +26,9 @@ public class ClientController
     {
         if (_data.CurrentClient is null)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("no registered client");
-            Console.ResetColor();
+            System.Console.ForegroundColor = ConsoleColor.Red;
+            System.Console.WriteLine("no registered client");
+            System.Console.ResetColor();
             return;
         }
 
@@ -47,16 +47,16 @@ public class ClientController
     {
         if (_data.CurrentClient is null)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("no registered client");
-            Console.ResetColor();
+            System.Console.ForegroundColor = ConsoleColor.Red;
+            System.Console.WriteLine("no registered client");
+            System.Console.ResetColor();
             return;
         }
 
-        Console.WriteLine($"\tName: {_data.CurrentClient.Name}");
-        Console.WriteLine($"\tSurname: {_data.CurrentClient.Surname}");
-        Console.WriteLine($"\tAddress: {_data.CurrentClient.Address}");
-        Console.WriteLine(_data.CurrentClient.PassportNumber == default
+        System.Console.WriteLine($"\tName: {_data.CurrentClient.Name}");
+        System.Console.WriteLine($"\tSurname: {_data.CurrentClient.Surname}");
+        System.Console.WriteLine($"\tAddress: {_data.CurrentClient.Address}");
+        System.Console.WriteLine(_data.CurrentClient.PassportNumber == default
             ? "\tPassportNumber: "
             : $"\tPassportNumber: {_data.CurrentClient.PassportNumber}");
         SuccessfulState();
@@ -75,22 +75,22 @@ public class ClientController
         var clients = _data.CentralBank.GetAlClients();
         if (clients.Count == 0)
         {
-            Console.WriteLine("no registered clients");
+            System.Console.WriteLine("no registered clients");
         }
 
         foreach (IClient client in clients)
         {
-            Console.WriteLine("---------------------");
-            Console.WriteLine($"Name: {client.Name}");
-            Console.WriteLine($"Surname: {client.Surname}");
-            Console.WriteLine($"Id: {client.Id}");
+            System.Console.WriteLine("---------------------");
+            System.Console.WriteLine($"Name: {client.Name}");
+            System.Console.WriteLine($"Surname: {client.Surname}");
+            System.Console.WriteLine($"Id: {client.Id}");
         }
     }
 
     private static void SuccessfulState()
     {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine(">> Success");
-        Console.ResetColor();
+        System.Console.ForegroundColor = ConsoleColor.Green;
+        System.Console.WriteLine(">> Success");
+        System.Console.ResetColor();
     }
 }

@@ -1,9 +1,8 @@
 using Banks.Accounts;
 using Banks.Entities;
-using Banks.Interfaces;
 using Spectre.Console;
 
-namespace Banks.UI.Controllers;
+namespace Banks.Console.UI.Controllers;
 
 public class AccountController
 {
@@ -18,21 +17,21 @@ public class AccountController
         var banks = _data.CentralBank.GetAllBanks();
         if (banks.Count == 0)
         {
-            Console.WriteLine("no registered banks and accounts");
+            System.Console.WriteLine("no registered banks and accounts");
         }
 
         foreach (Bank bank in banks)
         {
             if (bank.GetAccounts.Count == 0)
             {
-                Console.WriteLine($"----------Bank name: {bank.Name} :((((");
+                System.Console.WriteLine($"----------Bank name: {bank.Name} :((((");
                 continue;
             }
 
-            Console.WriteLine($"----------Bank name: {bank.Name}");
-            Console.WriteLine($"----------Bank Id: {bank.Id}");
-            Console.WriteLine("Accounts:");
-            bank.GetAccounts.ToList().ForEach(x => Console.WriteLine(
+            System.Console.WriteLine($"----------Bank name: {bank.Name}");
+            System.Console.WriteLine($"----------Bank Id: {bank.Id}");
+            System.Console.WriteLine("Accounts:");
+            bank.GetAccounts.ToList().ForEach(x => System.Console.WriteLine(
                 $"Account Id: {x.Id}" +
                 $"\nClient Id: {x.Client.Id}" +
                 $"\nBalance: {x.Balance}" +
@@ -44,7 +43,7 @@ public class AccountController
     {
         if (_data.CurrentClient is null)
         {
-            Console.WriteLine("no registered client, create client");
+            System.Console.WriteLine("no registered client, create client");
             return;
         }
 
@@ -56,7 +55,7 @@ public class AccountController
     {
         if (_data.CurrentClient is null)
         {
-            Console.WriteLine("no registered client, create client");
+            System.Console.WriteLine("no registered client, create client");
             return;
         }
 
@@ -68,7 +67,7 @@ public class AccountController
     {
         if (_data.CurrentClient is null)
         {
-            Console.WriteLine("no registered client, create client");
+            System.Console.WriteLine("no registered client, create client");
             return;
         }
 
@@ -86,9 +85,9 @@ public class AccountController
 
     private static void SuccessfulState()
     {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine(">> Success");
-        Console.ResetColor();
+        System.Console.ForegroundColor = ConsoleColor.Green;
+        System.Console.WriteLine(">> Success");
+        System.Console.ResetColor();
     }
 
     private Bank GetBank()
