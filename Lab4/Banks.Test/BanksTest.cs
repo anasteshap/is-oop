@@ -16,7 +16,8 @@ public class BanksTest
     public void TransactionTest()
     {
         var cb = new CentralBank(new RewindClock());
-        Bank bank = cb.CreateBank("tink", 3, new List<DepositPercent>() { new DepositPercent(new Percent(3), 0) }, 100, 2000, 3000, TimeSpan.FromDays(90));
+        var list = new List<DepositPercent>() { new DepositPercent(new Percent(3), 0) };
+        Bank bank = cb.CreateBank("tink", 3, list, 100, 2000, 3000, TimeSpan.FromDays(90));
         IClient client = cb.RegisterClient("Anastasiia", "Pinchuk");
         BaseAccount account1 = bank.CreateAccount(TypeOfBankAccount.Debit, client);
 

@@ -30,12 +30,13 @@ public class DepositAccountConfiguration
 
     private void ValidateDepositPercents(List<DepositPercent> depositPercents)
     {
+        ArgumentNullException.ThrowIfNull(nameof(depositPercents));
         if (depositPercents.Count == 0)
             throw AccountException.InvalidConfiguration("No deposit interest");
         if (depositPercents[0].LeftBorder != 0)
             throw AccountException.InvalidConfiguration("LeftBorder of first depositPercent must be equal to 0");
 
-        for (int i = 0; i < _depositPercents.Count - 1; i++)
+        for (int i = 0; i < depositPercents.Count - 1; i++)
         {
             if (_depositPercents[i].RightBorder != _depositPercents[i + 1].LeftBorder)
                 throw AccountException.InvalidConfiguration("LeftBorder of first depositPercent and rightBorder of next one must be equal");
