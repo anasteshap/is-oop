@@ -13,7 +13,7 @@ namespace Banks.Service;
 public class CentralBank : ICentralBank
 {
     private readonly List<Bank> _banks = new ();
-    private readonly List<Client> _clients = new (); // убрать // FindClientByName
+    private readonly List<Client> _clients = new ();
 
     public CentralBank(RewindClock rewindClock)
     {
@@ -33,6 +33,11 @@ public class CentralBank : ICentralBank
     public Bank? FindBankByName(string name) => _banks.FirstOrDefault(x => x.Name == name);
 
     public Bank GetBankByName(string name) => FindBankByName(name) ?? throw new Exception($"Банка с именем {name} нет");
+    public IClient? FindClientById(Guid id) => _clients.FirstOrDefault(x => x.Id.ToString() == id.ToString());
+
+    public IClient GetClientById(Guid id) => FindClientById(id) ?? throw new Exception($"Банка с Id {id} нет");
+
+    public IReadOnlyCollection<IClient> GetAlClients() => _clients;
 
     public IReadOnlyCollection<Bank> GetAllBanks() => _banks;
 

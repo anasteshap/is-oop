@@ -15,8 +15,8 @@ public class ClientController
     {
         string name = AnsiConsole.Ask<string>("Enter a [green]name[/] - ");
         string surName = AnsiConsole.Ask<string>("Enter a [green]surName[/] - ");
-        string address = AnsiConsole.Ask("Enter an [green]address[/] - ", string.Empty);
-        long passport = AnsiConsole.Ask<long>("Enter a [green]passportNumber[/] - ", default);
+        string? address = AnsiConsole.Ask<string?>("Enter an [green]address[/] - ", null);
+        long? passport = AnsiConsole.Ask<long?>("Enter a [green]passportNumber[/] - ", null);
         IClient client = _data.CentralBank.RegisterClient(name, surName, address, passport);
         _data.ChangeCurrentClient(client);
         SuccessfulState();
@@ -60,6 +60,31 @@ public class ClientController
             ? "\tPassportNumber: "
             : $"\tPassportNumber: {_data.CurrentClient.PassportNumber}");
         SuccessfulState();
+    }
+
+    public void ChangeCurrent()
+    {
+        Guid id = AnsiConsole.Ask<Guid>("Enter a [green]new clientId[/] - ");
+        _data.ChangeCurrentClient(_data.CentralBank.GetClientById(id));
+    }
+
+    public void ShowAll()
+    {
+        Guid id = AnsiConsole.Ask<Guid>("Enter a [green]new clientId[/] - ");
+        _data.ChangeCurrentClient(_data.CentralBank.GetClientById(id));
+        var clients = _data.CentralBank.GetAlClients();
+        if (clients.Count == 0)
+        {
+            Console.WriteLine("no registered clients");
+        }
+
+        foreach (IClient client in clients)
+        {
+            Console.WriteLine("---------------------");
+            Console.WriteLine($"Name: {client.Name}");
+            Console.WriteLine($"Surname: {client.Surname}");
+            Console.WriteLine($"Id: {client.Id}");
+        }
     }
 
     private static void SuccessfulState()

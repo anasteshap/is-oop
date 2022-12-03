@@ -22,7 +22,7 @@ public class AppManager
         while (true)
         {
             string? console = Console.ReadLine();
-            if (console == "app --menu")
+            if (console == "--menu")
             {
                 Menu();
                 continue;
@@ -57,6 +57,8 @@ public class AppManager
         Console.WriteLine("app client create");
         Console.WriteLine("app client current addInfo");
         Console.WriteLine("app client current showInfo");
+        Console.WriteLine("app client current change");
+        Console.WriteLine("app client showAll");
         Console.WriteLine("app account create credit");
         Console.WriteLine("app account create debit");
         Console.WriteLine("app account create deposit");
@@ -87,12 +89,14 @@ public class AppManager
         var clientCurrentContainer = new ContainerChain("current");
         clientCurrentContainer
             .AddSubChain(new ComponentChain(controller2.AddCurrentClientInfo, "addInfo"))
-            .AddNext(new ComponentChain(controller2.ShowCurrentClientInfo, "showInfo"));
+            .AddNext(new ComponentChain(controller2.ShowCurrentClientInfo, "showInfo"))
+            .AddNext(new ComponentChain(controller2.ChangeCurrent, "change"));
 
         var clientContainer = new ContainerChain("client");
         clientContainer
             .AddSubChain(new ComponentChain(controller2.Create, "create"))
-            .AddNext(clientCurrentContainer);
+            .AddNext(clientCurrentContainer)
+            .AddNext(new ComponentChain(controller2.ShowAll, "showAll"));
 
         var accountCreateContainer = new ContainerChain("create");
         accountCreateContainer

@@ -10,15 +10,15 @@ public class Client : IClient
     {
         Name = name;
         Surname = surname;
-        Address? = address;
-        PassportNumber? = passportNumber;
+        Address = address;
+        PassportNumber = passportNumber;
     }
 
     public Guid Id { get; } = Guid.NewGuid();
     public string Name { get; }
     public string Surname { get; }
-    public string? Address { get; private set; }
-    public long? PassportNumber { get; private set; }
+    public string? Address { get; private set; } = null;
+    public long? PassportNumber { get; private set; } = null;
     public bool IsDubious => string.IsNullOrEmpty(Address) || PassportNumber == default;
 
     public void SetAddress(string? address)
