@@ -1,3 +1,5 @@
+using Banks.Exceptions;
+
 namespace Banks.Accounts.Commands;
 
 public class Transfer : IBalanceOperationCommand
@@ -8,9 +10,11 @@ public class Transfer : IBalanceOperationCommand
 
     public Transfer(BaseAccount toAccount, BaseAccount fromAccount, decimal sum)
     {
+        ArgumentNullException.ThrowIfNull(nameof(toAccount));
+        ArgumentNullException.ThrowIfNull(nameof(fromAccount));
         _toAccount = toAccount;
         _fromAccount = fromAccount;
-        _sum = sum < 0 ? throw new Exception() : sum;
+        _sum = sum < 0 ? throw TransactionException.NegativeAmount() : sum;
     }
 
     public void Execute()
@@ -22,7 +26,7 @@ public class Transfer : IBalanceOperationCommand
         catch (Exception)
         {
             _fromAccount.IncreaseAmount(_sum);
-            throw new Exception("не удалось снять деньги с 1 счёта");
+            throw TransactionException.FailedTransaction("Couldn't withdraw money from 1 account");
         }
 
         _toAccount.IncreaseAmount(_sum);
@@ -37,7 +41,7 @@ public class Transfer : IBalanceOperationCommand
         catch (Exception)
         {
             _toAccount.IncreaseAmount(_sum);
-            throw new Exception("не удалось снять деньги с 1 счёта");
+            throw TransactionException.FailedTransaction("Couldn't withdraw money from 2 account");
         }
 
         _fromAccount.IncreaseAmount(_sum);

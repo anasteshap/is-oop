@@ -22,10 +22,4 @@
       </PackageReference>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Exceptions" />
-      <Folder Include="UI\ChainOfResponsibility" />
-      <Folder Include="UI\Controllers" />
-    </ItemGroup>
-
 </Project>

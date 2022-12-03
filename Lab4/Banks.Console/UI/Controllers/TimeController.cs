@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using Spectre.Console;
 
 namespace Banks.Console.UI.Controllers;
@@ -26,5 +27,10 @@ public class TimeController
         System.Console.ForegroundColor = ConsoleColor.Green;
         System.Console.WriteLine(">> Success");
         System.Console.ResetColor();
+    }
+
+    public void Exit()
+    {
+        Environment.Exit(0);
     }
 }

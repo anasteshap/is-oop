@@ -54,11 +54,13 @@ public class AppManager
         System.Console.WriteLine("app bank create");
         System.Console.WriteLine("app bank showAll");
         System.Console.WriteLine("app bank changeConfig");
+        System.Console.WriteLine();
         System.Console.WriteLine("app client create");
         System.Console.WriteLine("app client current addInfo");
         System.Console.WriteLine("app client current showInfo");
         System.Console.WriteLine("app client current change");
         System.Console.WriteLine("app client showAll");
+        System.Console.WriteLine();
         System.Console.WriteLine("app account create credit");
         System.Console.WriteLine("app account create debit");
         System.Console.WriteLine("app account create deposit");
@@ -68,8 +70,13 @@ public class AppManager
         System.Console.WriteLine("app account cancelTransaction");
         System.Console.WriteLine("app account showAll");
         System.Console.WriteLine("app account showAllTransactionsInAccount");
+        System.Console.WriteLine("app account checkBalance");
+        System.Console.WriteLine();
         System.Console.WriteLine("app rewindTime");
         System.Console.WriteLine("app dateNow");
+        System.Console.WriteLine("app exit");
+        System.Console.WriteLine("enter --menu for help");
+        System.Console.WriteLine();
     }
 
     private void Init()
@@ -112,13 +119,15 @@ public class AppManager
             .AddNext(new ComponentChain(controller4.TransferMoney, "transferMoney"))
             .AddNext(new ComponentChain(controller4.CancelTransaction, "cancelTransaction"))
             .AddNext(new ComponentChain(controller3.ShowAll, "showAll"))
-            .AddNext(new ComponentChain(controller4.ShowAllTransactionsInAccount, "showAllTransactionsInAccount"));
+            .AddNext(new ComponentChain(controller4.ShowAllTransactionsInAccount, "showAllTransactionsInAccount"))
+            .AddNext(new ComponentChain(controller3.CheckBalance, "checkBalance"));
 
         _app
             .AddSubChain(bankContainer)
             .AddNext(clientContainer)
             .AddNext(accountContainer)
             .AddNext(new ComponentChain(controller5.RewindTime, "rewindTime"))
-            .AddNext(new ComponentChain(controller5.DateNow, "dateNow"));
+            .AddNext(new ComponentChain(controller5.DateNow, "dateNow"))
+            .AddNext(new ComponentChain(controller5.Exit, "exit"));
     }
 }

@@ -10,6 +10,7 @@ public class BankController
     private readonly DataController _data;
     public BankController(DataController data)
     {
+        ArgumentNullException.ThrowIfNull(nameof(data));
         _data = data;
     }
 
@@ -94,6 +95,9 @@ public class BankController
         ans = AnsiConsole.Ask<char>("Do you want [green]to change creditLimit[/]? (y/n) - ");
         if (ans == 'y')
             bank.ChangeCreditLimit(AnsiConsole.Ask<decimal>("New [green]creditLimit[/] - "));
+        ans = AnsiConsole.Ask<char>("Do you want [green]to change depositTimeSpan[/]? (y/n) - ");
+        if (ans == 'y')
+            bank.ChangeDepositTimeSpan(new TimeSpan(AnsiConsole.Ask<int>("New [green]depositTimeSpan (count of days)[/] - "), 0, 0, 0));
         ans = AnsiConsole.Ask<char>("Do you want [green]to change limitForDubiousClient[/]? (y/n) - ");
         if (ans == 'y')
             bank.ChangeLimitForDubiousClient(AnsiConsole.Ask<decimal>("New [green]limitForDubiousClient[/] - "));

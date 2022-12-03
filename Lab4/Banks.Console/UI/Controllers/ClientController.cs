@@ -8,6 +8,7 @@ public class ClientController
     private readonly DataController _data;
     public ClientController(DataController data)
     {
+        ArgumentNullException.ThrowIfNull(nameof(data));
         _data = data;
     }
 
@@ -70,8 +71,6 @@ public class ClientController
 
     public void ShowAll()
     {
-        Guid id = AnsiConsole.Ask<Guid>("Enter a [green]new clientId[/] - ");
-        _data.ChangeCurrentClient(_data.CentralBank.GetClientById(id));
         var clients = _data.CentralBank.GetAlClients();
         if (clients.Count == 0)
         {

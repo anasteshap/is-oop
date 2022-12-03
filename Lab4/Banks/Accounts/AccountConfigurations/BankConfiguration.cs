@@ -10,10 +10,14 @@ public class BankConfiguration
         DepositAccountConfiguration depositAccountConfiguration,
         Limit limitForDubiousClient)
     {
-        CreditAccountConfiguration = creditAccountConfiguration ?? throw new ArgumentNullException();
-        DebitAccountConfiguration = debitAccountConfiguration ?? throw new ArgumentNullException();
-        DepositAccountConfiguration = depositAccountConfiguration ?? throw new ArgumentNullException();
-        LimitForDubiousClient = limitForDubiousClient ?? throw new ArgumentNullException();
+        ArgumentNullException.ThrowIfNull(nameof(creditAccountConfiguration));
+        ArgumentNullException.ThrowIfNull(nameof(debitAccountConfiguration));
+        ArgumentNullException.ThrowIfNull(nameof(depositAccountConfiguration));
+        ArgumentNullException.ThrowIfNull(nameof(limitForDubiousClient));
+        CreditAccountConfiguration = creditAccountConfiguration;
+        DebitAccountConfiguration = debitAccountConfiguration;
+        DepositAccountConfiguration = depositAccountConfiguration;
+        LimitForDubiousClient = limitForDubiousClient;
     }
 
     public CreditAccountConfiguration CreditAccountConfiguration { get; }

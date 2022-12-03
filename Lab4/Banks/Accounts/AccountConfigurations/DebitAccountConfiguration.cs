@@ -6,6 +6,7 @@ public class DebitAccountConfiguration
 {
     public DebitAccountConfiguration(Percent debitPercent)
     {
+        ArgumentNullException.ThrowIfNull(nameof(debitPercent));
         DebitPercent = debitPercent;
     }
 

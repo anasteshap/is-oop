@@ -1,4 +1,5 @@
 using Banks.Accounts.AccountConfigurations;
+using Banks.Exceptions;
 using Banks.Interfaces;
 using Banks.Models;
 
@@ -9,10 +10,10 @@ public class CreditAccount : BaseAccount
     private readonly CreditAccountConfiguration _configuration;
     private readonly Limit _limitForDubiousClient;
 
-    // private readonly Limit _commissionAmount = 0;
     internal CreditAccount(IClient client, BankConfiguration bankConfiguration)
         : base(client, TypeOfBankAccount.Credit)
     {
+        ArgumentNullException.ThrowIfNull(nameof(bankConfiguration));
         _configuration = bankConfiguration.CreditAccountConfiguration;
         _limitForDubiousClient = bankConfiguration.LimitForDubiousClient;
         Balance = bankConfiguration.CreditAccountConfiguration.CreditLimit;
@@ -21,20 +22,22 @@ public class CreditAccount : BaseAccount
     public override void DecreaseAmount(decimal sum)
     {
         if (sum <= 0)
-            throw new Exception("Sum can't be <= 0");
+            throw TransactionException.NegativeAmount();
 
         if (Client.IsDubious)
         {
             if (sum > _limitForDubiousClient.Value)
-                throw new Exception($"You can't withdraw money more than limit {_limitForDubiousClient.Value}");
+                throw TransactionException.SumExceedingLimit(sum, _limitForDubiousClient.Value);
         }
 
         if (sum > Balance)
         {
             if (Math.Abs(Balance - sum - _configuration.CreditCommission) < _configuration.CreditLimit)
-                throw new Exception($"Not enough money");
+                throw AccountException.NotEnoughMoney();
         }
 
         Balance -= (sum <= Balance) ? sum : sum + _configuration.CreditCommission;
     }
+
+    public override void AccountDailyPayoff() { }
 }

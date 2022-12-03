@@ -9,6 +9,7 @@ public class AccountController
     private readonly DataController _data;
     public AccountController(DataController data)
     {
+        ArgumentNullException.ThrowIfNull(nameof(data));
         _data = data;
     }
 
@@ -73,13 +74,26 @@ public class AccountController
 
         Bank bank = GetBank();
         char ans = AnsiConsole.Ask<char>("Add a [green]depositPeriodsInDays[/]? (y/n) - ");
-        TimeSpan? endOfPeriod = null;
+        int endOfPeriod = 0;
         if (ans.Equals('y'))
         {
-            endOfPeriod = AnsiConsole.Ask("Enter a [green]timeSpan[/] - ", TimeSpan.FromDays(90));
+            endOfPeriod = AnsiConsole.Ask("Enter a [green]timeSpan (count days)[/] - ", 0);
         }
 
-        bank.CreateAccount(TypeOfBankAccount.Deposit, _data.CurrentClient, endOfPeriod);
+        if (endOfPeriod == 0)
+            bank.CreateAccount(TypeOfBankAccount.Deposit, _data.CurrentClient);
+        else
+            bank.CreateAccount(TypeOfBankAccount.Deposit, _data.CurrentClient, new TimeSpan(endOfPeriod, 0, 0, 0));
+        SuccessfulState();
+    }
+
+    public void CheckBalance()
+    {
+        Bank bank = GetBank();
+        Guid accountId = AnsiConsole.Ask<Guid>("Enter an [green]accountId[/] - ");
+        BaseAccount account = bank.GetAccount(accountId);
+        System.Console.WriteLine($"AccountId: {accountId}");
+        System.Console.WriteLine($"Balance: {account.Balance}");
         SuccessfulState();
     }
 

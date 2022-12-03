@@ -8,7 +8,8 @@ public abstract class ChainBase : IChain
 
     protected ChainBase(string str)
     {
-        ArgumentNullException.ThrowIfNull(nameof(str));
+        if (string.IsNullOrEmpty(str))
+            throw new ArgumentNullException();
         _str = str;
     }
 

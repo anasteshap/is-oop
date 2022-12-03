@@ -10,6 +10,7 @@ public class TransactionController
 
     public TransactionController(DataController data)
     {
+        ArgumentNullException.ThrowIfNull(nameof(data));
         _data = data;
     }
 

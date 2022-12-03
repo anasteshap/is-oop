@@ -1,7 +1,7 @@
 using System.Globalization;
 using Banks.Accounts.AccountConfigurations;
 using Banks.DateTimeProvider;
-using Banks.Entities;
+using Banks.Exceptions;
 using Banks.Interfaces;
 using Banks.Models;
 
@@ -17,6 +17,8 @@ public class DebitAccount : BaseAccount
     internal DebitAccount(IClock clock, IClient client, BankConfiguration bankConfiguration)
         : base(client, TypeOfBankAccount.Debit)
     {
+        ArgumentNullException.ThrowIfNull(nameof(clock));
+        ArgumentNullException.ThrowIfNull(nameof(bankConfiguration));
         _clock = clock;
         _countOfDays = new GregorianCalendar().GetDaysInMonth(_clock.CurrentTime().Year, _clock.CurrentTime().Month);
         _configuration = bankConfiguration.DebitAccountConfiguration;
@@ -25,31 +27,31 @@ public class DebitAccount : BaseAccount
         clock.AddAction(AccountDailyPayoff);
     }
 
-    public override void AccountDailyPayoff() // internal
+    public override void AccountDailyPayoff()
     {
         int daysInYear = new GregorianCalendar().GetDaysInYear(_clock.CurrentTime().Year);
         _percentageAmount += (Balance * _configuration.DebitPercent.Value) / daysInYear;
         _countOfDays--;
-        if (_countOfDays == 0)
-        {
-            Balance += _percentageAmount;
-            _percentageAmount = 0;
-            _countOfDays = new GregorianCalendar().GetDaysInMonth(_clock.CurrentTime().Year, _clock.CurrentTime().Month);
-        }
+        if (_countOfDays != 0)
+            return;
+
+        Balance += _percentageAmount;
+        _percentageAmount = 0;
+        _countOfDays = new GregorianCalendar().GetDaysInMonth(_clock.CurrentTime().Year, _clock.CurrentTime().Month);
     }
 
     public override void DecreaseAmount(decimal sum)
     {
         if (sum <= 0)
-            throw new Exception("Sum can't be <= 0");
+            throw TransactionException.NegativeAmount();
 
         if (Balance < sum)
-            throw new Exception("Sum > balance");
+            throw AccountException.NotEnoughMoney();
 
         if (Client.IsDubious)
         {
             if (sum > _limitForDubiousClient.Value)
-                throw new Exception($"You can't withdraw money more than limit {_limitForDubiousClient.Value}");
+                throw TransactionException.SumExceedingLimit(sum, _limitForDubiousClient.Value);
         }
 
         Balance -= sum;

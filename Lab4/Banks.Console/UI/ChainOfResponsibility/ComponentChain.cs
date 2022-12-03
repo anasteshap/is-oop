@@ -8,6 +8,7 @@ public class ComponentChain : ChainBase
     public ComponentChain(Action action, string str)
         : base(str)
     {
+        ArgumentNullException.ThrowIfNull(nameof(action));
         _action = action;
     }
 
@@ -20,7 +21,7 @@ public class ComponentChain : ChainBase
         else
         {
             if (enumerator.MoveNext())
-                throw new Exception();
+                throw new Exception("Wrong command");
             _action.Invoke();
         }
     }

@@ -1,3 +1,5 @@
+using Banks.Exceptions;
+
 namespace Banks.Models;
 
 public class Percent
@@ -6,9 +8,7 @@ public class Percent
     public Percent(decimal value)
     {
         if (value < MinPercentValue)
-        {
-            throw new Exception();
-        }
+            throw TransactionException.NegativeAmount();
 
         Value = value / 100;
     }

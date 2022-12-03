@@ -1,4 +1,4 @@
-using Banks.Accounts.Commands;
+using Banks.Exceptions;
 using Banks.Interfaces;
 using Banks.Transaction;
 
@@ -9,9 +9,10 @@ public abstract class BaseAccount
     private readonly List<BankTransaction> _transactions = new ();
     protected BaseAccount(IClient client, TypeOfBankAccount type)
     {
+        ArgumentNullException.ThrowIfNull(nameof(client));
         Type = type;
         Id = Guid.NewGuid();
-        Client = client ?? throw new ArgumentNullException();
+        Client = client;
     }
 
     public TypeOfBankAccount Type { get; }
@@ -21,27 +22,24 @@ public abstract class BaseAccount
     public IReadOnlyCollection<BankTransaction> GetAllTransaction => _transactions;
 
     public BankTransaction GetTransaction(Guid transactionId)
-        => _transactions.FirstOrDefault(x => x.Id.Equals(transactionId)) ?? throw new Exception();
+        => _transactions.FirstOrDefault(x => x.Id.Equals(transactionId)) ?? throw TransactionException.TransactionDoesNotExist(transactionId);
 
     public void IncreaseAmount(decimal sum)
     {
         if (sum <= 0)
-            throw new Exception("Sum can't be <= 0");
+            throw TransactionException.NegativeAmount();
 
         Balance += sum;
     }
 
     public abstract void DecreaseAmount(decimal sum);
 
-    public virtual void AccountDailyPayoff()
-        => throw new NotImplementedException();
+    public abstract void AccountDailyPayoff();
 
     public void SaveChanges(BankTransaction baseTransaction)
     {
         if (_transactions.Contains(baseTransaction))
-        {
-            throw new Exception();
-        }
+            throw TransactionException.TransactionAlreadyExists(baseTransaction.Id);
 
         _transactions.Add(baseTransaction);
     }

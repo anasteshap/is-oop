@@ -4,6 +4,6 @@ namespace Banks.Console.UI.ChainOfResponsibility;
 
 public interface IChain
 {
-    void Process(IEnumerator enumerator); // List<string> strings
+    void Process(IEnumerator enumerator);
     IChain AddNext(IChain nextChain);
 }

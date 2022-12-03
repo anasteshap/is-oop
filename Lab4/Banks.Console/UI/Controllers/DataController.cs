@@ -6,6 +6,7 @@ public class DataController
 {
     public DataController(ICentralBank centralBank)
     {
+        ArgumentNullException.ThrowIfNull(nameof(centralBank));
         CentralBank = centralBank;
     }
 

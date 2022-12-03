@@ -1,5 +1,3 @@
-using Banks.Observer;
-
 namespace Banks.Interfaces;
 
 public interface IClient : Observer.IObserver<string>
@@ -10,6 +8,7 @@ public interface IClient : Observer.IObserver<string>
     string? Address { get; }
     long? PassportNumber { get; }
     bool IsDubious { get; }
+    IReadOnlyCollection<string> GetUpdatesOfAccountsConfiguration();
     void SetAddress(string? address);
     void SetPassportNumber(long passport);
 }

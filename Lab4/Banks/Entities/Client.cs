@@ -1,12 +1,12 @@
+using Banks.Exceptions;
 using Banks.Interfaces;
-using Banks.Observer;
 
 namespace Banks.Entities;
 
 public class Client : IClient
 {
-    private List<string> _updates = new (); // GetMessages() = _updates;
-    internal Client(string name, string surname, string? address, long? passportNumber)
+    private readonly List<string> _updates = new ();
+    public Client(string name, string surname, string? address, long? passportNumber)
     {
         Name = name;
         Surname = surname;
@@ -17,14 +17,15 @@ public class Client : IClient
     public Guid Id { get; } = Guid.NewGuid();
     public string Name { get; }
     public string Surname { get; }
-    public string? Address { get; private set; } = null;
-    public long? PassportNumber { get; private set; } = null;
+    public string? Address { get; private set; }
+    public long? PassportNumber { get; private set; }
     public bool IsDubious => string.IsNullOrEmpty(Address) || PassportNumber == default;
+    public IReadOnlyCollection<string> GetUpdatesOfAccountsConfiguration() => _updates;
 
     public void SetAddress(string? address)
     {
         if (string.IsNullOrEmpty(address))
-            throw new Exception("Invalid address");
+            throw ClientException.InvalidAddress();
 
         Address = address;
     }
@@ -32,10 +33,10 @@ public class Client : IClient
     public void SetPassportNumber(long passport)
     {
         if (PassportNumber != default)
-            throw new Exception("Passport is already exist");
+            throw ClientException.InvalidPassport("Passport is already exist");
 
         if (passport == default)
-            throw new Exception("Invalid passport");
+            throw ClientException.InvalidPassport();
 
         PassportNumber = passport;
     }

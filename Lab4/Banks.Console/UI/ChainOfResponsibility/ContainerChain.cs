@@ -28,7 +28,7 @@ public class ContainerChain : ChainBase
         else
         {
             if (!enumerator.MoveNext())
-                throw new Exception();
+                throw new Exception("Wrong command");
             _headSubChain?.Process(enumerator);
         }
     }

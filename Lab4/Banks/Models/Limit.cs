@@ -1,3 +1,5 @@
+using Banks.Exceptions;
+
 namespace Banks.Models;
 
 public class Limit
@@ -5,9 +7,7 @@ public class Limit
     public Limit(decimal limit)
     {
         if (limit < 0)
-        {
-            throw new Exception();
-        }
+            throw TransactionException.NegativeAmount();
 
         Value = limit;
     }
